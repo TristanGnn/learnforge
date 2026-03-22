@@ -14,12 +14,12 @@
 src/
   main.jsx          → Point d'entrée React, monte <App /> dans #root
   App.jsx           → Wrapper minimal, retourne <CourseBuilder />
-  CourseBuilder.jsx → Toute l'application (~1100 lignes, fichier unique)
+  CourseBuilder.jsx → Fichier principal de l'application (~1100 lignes)
   index.css         → Reset minimal du body (margin: 0)
   App.css           → #root en width:100% height:100vh overflow:hidden
 ```
 
-> ⚠️ Toute la logique, les composants, les styles et les données sont dans `CourseBuilder.jsx`. Ne pas créer de nouveaux fichiers sauf besoin explicite.
+> De nouveaux fichiers peuvent être créés si c'est justifié (composant complexe, logique réutilisable, etc.). Continuer à tout mettre dans `CourseBuilder.jsx` reste tout à fait valide — ce n'est pas parce que d'autres fichiers sont autorisés qu'il faut obligatoirement les créer.
 
 ## Architecture de données
 
