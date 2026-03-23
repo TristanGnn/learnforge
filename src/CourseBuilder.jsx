@@ -19,15 +19,15 @@ function mergeAdjacentText(segs) {
 }
 
 const SLIDE_TYPES = [
-  { id: "text", label: "Texte", icon: "📝", desc: "Contenu texte riche" },
-  { id: "image", label: "Image / Vidéo", icon: "🖼️", desc: "Image ou vidéo avec description" },
-  { id: "quiz", label: "Quiz QCM", icon: "❓", desc: "Question à choix multiples" },
-  { id: "flip", label: "Carte à retourner", icon: "🔄", desc: "Recto image/titre, verso texte" },
-  { id: "code", label: "Code", icon: "💻", desc: "Bloc de code interactif" },
-  { id: "separator", label: "Séparateur", icon: "➖", desc: "Séparation visuelle" },
-  { id: "fillblank", label: "Texte à trous", icon: "✏️", desc: "Compléter les mots manquants" },
-  { id: "truefalse", label: "Vrai ou Faux", icon: "⚖️", desc: "Question vrai ou faux" },
-  { id: "reveal", label: "Révélation", icon: "🎭", desc: "Image qui glisse et révèle un texte" },
+  { id: "text", label: "Texte", icon: "FileText", desc: "Contenu texte riche" },
+  { id: "image", label: "Image / Vidéo", icon: "ImageIcon", desc: "Image ou vidéo avec description" },
+  { id: "quiz", label: "Quiz QCM", icon: "HelpCircle", desc: "Question à choix multiples" },
+  { id: "flip", label: "Carte à retourner", icon: "Flip", desc: "Recto image/titre, verso texte" },
+  { id: "code", label: "Code", icon: "Terminal", desc: "Bloc de code interactif" },
+  { id: "separator", label: "Séparateur", icon: "MinusIcon", desc: "Séparation visuelle" },
+  { id: "fillblank", label: "Texte à trous", icon: "PencilLine", desc: "Compléter les mots manquants" },
+  { id: "truefalse", label: "Vrai ou Faux", icon: "ScaleIcon", desc: "Question vrai ou faux" },
+  { id: "reveal", label: "Révélation", icon: "Sparkles", desc: "Image qui glisse et révèle un texte" },
 ];
 
 const DEFAULT_COURSE = {
@@ -66,6 +66,29 @@ const Icons = {
   Check: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,
   Award: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
   Flip: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>,
+  // — types de slides
+  FileText: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+  ImageIcon: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
+  HelpCircle: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+  Terminal: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>,
+  MinusIcon: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  PencilLine: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
+  ScaleIcon: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><path d="M6 21h12"/><path d="M3 6l9-3 9 3"/><path d="M3 6l4.5 9a4.5 4.5 0 0 0 9 0L21 6"/></svg>,
+  Sparkles: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M5 3v3"/><path d="M3.5 4.5h3"/><path d="M19 18v3"/><path d="M17.5 19.5h3"/></svg>,
+  // — actions
+  X: ({ size = 14 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+  FolderOpen: ({ size = 14 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>,
+  CheckCircle: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+  XCircle: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>,
+  ChevronLeft: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>,
+  ChevronRight: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>,
+  AlertTriangle: ({ size = 14 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+  InfoIcon: ({ size = 14 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  RotateCcw: ({ size = 14 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>,
+  Play: ({ size = 12 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+  Square: ({ size = 12 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>,
+  GraduationCap: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
+  ScrollText: ({ size = 16 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 3H4.5"/><path d="M15 8h-5"/><path d="M15 12h-5"/></svg>,
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -157,17 +180,17 @@ function FileUrlInput({ value, onChange, accept, placeholder }) {
           type="button"
           onClick={() => onChange("")}
           title="Effacer"
-          style={{ width: 38, height: 38, borderRadius: "50%", background: "#1a0a0a", border: "1.5px solid #ef4444", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0, fontSize: 14, lineHeight: 0, transition: "background 0.15s", alignSelf: "center" }}
-          onMouseEnter={e => e.currentTarget.style.background = "#ef444433"}
-          onMouseLeave={e => e.currentTarget.style.background = "#1a0a0a"}
-        >✕</button>
+          style={{ width: 38, height: 38, borderRadius: "50%", background: "#1a0a0a", border: "1.5px solid #ef4444", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 0, transition: "background 0.15s, transform 0.15s", alignSelf: "center" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "#ef444433"; e.currentTarget.style.transform = "scale(1.1)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "#1a0a0a"; e.currentTarget.style.transform = "scale(1)"; }}
+        ><Icons.X size={14} /></button>
       )}
       <button
         type="button"
         onClick={() => fileRef.current.click()}
         style={{ ...S.btnSec, whiteSpace: "nowrap", flexShrink: 0, padding: "10px 14px" }}
       >
-        📁 Importer
+        <Icons.FolderOpen size={14} /> Importer
       </button>
     </div>
   );
@@ -371,7 +394,7 @@ function TrueFalseSlideEditor({ slide, onChange }) {
       <div style={{ display: "flex", gap: 10 }}>
         {[true, false].map(val => (
           <button key={String(val)} onClick={() => onChange({ ...slide, correct: val })} style={{ flex: 1, padding: "12px", borderRadius: 10, border: slide.correct === val ? `2px solid ${val ? "#22c55e" : "#ef4444"}` : "2px solid #2a2a3e", background: slide.correct === val ? (val ? "#22c55e18" : "#ef444418") : "#1e1e2e", color: slide.correct === val ? (val ? "#4ade80" : "#f87171") : "#64748b", cursor: "pointer", fontWeight: 600, fontSize: 15, fontFamily: "'DM Sans', sans-serif" }}>
-            {val ? "✓ Vrai" : "✗ Faux"}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>{val ? <Icons.Check /> : <Icons.X size={16} />}{val ? "Vrai" : "Faux"}</span>
           </button>
         ))}
       </div>
@@ -499,14 +522,14 @@ function FillBlankSlideEditor({ slide, onChange }) {
             placeholder="Écrivez votre texte ici..."
           />
           <button onClick={applyText} style={{ ...S.btnPri, alignSelf: "flex-start" }}>
-            Confirmer → marquer les trous
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Confirmer <Icons.ChevronRight size={13} /> marquer les trous</span>
           </button>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <div style={{ background: "#7c3aed10", border: "1px solid #7c3aed33", borderRadius: 12, padding: 14 }}>
             <p style={{ color: "#a78bfa", fontSize: 13, margin: 0 }}>
-              ✏️ <strong>Cliquez</strong> sur un mot pour le transformer en trou · Cliquez sur un trou (violet) pour l'enlever
+              <span style={{ display: "inline-flex", verticalAlign: "middle", marginRight: 6 }}><Icons.PencilLine size={13} /></span><strong>Cliquez</strong> sur un mot pour le transformer en trou · Cliquez sur un trou (violet) pour l'enlever
             </p>
           </div>
 
@@ -656,7 +679,7 @@ function FlipCard({ slide, flipped, onFlip }) {
           {!slide.backImage && !slide.backText && (
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#475569", fontSize: 13 }}>Verso vide</div>
           )}
-          <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 600, display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>✓ Carte consultée</span>
+          <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 600, display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}><Icons.Check /> Carte consultée</span>
         </div>
       </div>
     </div>
@@ -731,9 +754,12 @@ function FillBlankPreview({ slide }) {
               color: allCorrect ? "#4ade80" : "#f87171",
               fontSize: 14, fontWeight: 500,
             }}>
+              <span className={allCorrect ? "lf-icon-success" : "lf-icon-error"} style={{ display: "inline-flex", verticalAlign: "middle", marginRight: 6 }}>
+                {allCorrect ? <Icons.CheckCircle size={16} /> : <Icons.XCircle size={16} />}
+              </span>
               {allCorrect
-                ? "✅ Parfait ! Toutes les réponses sont correctes."
-                : `❌ ${score} / ${blanks.length} correcte${score > 1 ? "s" : ""}`}
+                ? "Parfait ! Toutes les réponses sont correctes."
+                : `${score} / ${blanks.length} correcte${score > 1 ? "s" : ""}`}
             </div>
             <button onClick={() => { setAnswers({}); setChecked(false); }} style={S.btnSec}>
               Réessayer
@@ -778,7 +804,11 @@ function RevealPreview({ slide }) {
 
       {/* Hint en dessous de la zone */}
       <div style={{ marginTop: 10, textAlign: "center", fontSize: 11, color: "#7c3aed99" }}>
-        {revealed ? "← Cliquez pour refermer" : "Cliquez pour révéler →"}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+          {revealed
+            ? <><Icons.ChevronLeft size={12} /> Cliquez pour refermer</>
+            : <>Cliquez pour révéler <Icons.ChevronRight size={12} /></>}
+        </span>
       </div>
     </div>
   );
@@ -807,7 +837,7 @@ function TrueFalsePreview({ slide, onAnswer, answered }) {
           else if (show && wasSelected)       { bg = "#ef444414"; border = "2px solid #ef444455"; color = "#f87171"; }
           return (
             <button key={String(val)} onClick={() => !show && onAnswer(val)} style={{ flex: 1, padding: "28px 16px", borderRadius: 14, border, background: bg, color, cursor: show ? "default" : "pointer", fontSize: 22, fontWeight: 700, fontFamily: "'DM Sans', sans-serif", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, transition: "all 0.2s" }}>
-              <span style={{ fontSize: 32 }}>{val ? "✓" : "✗"}</span>
+              <span style={{ display: "flex" }}>{val ? <Icons.Check /> : <Icons.X size={16} />}</span>
               {val ? "Vrai" : "Faux"}
             </button>
           );
@@ -815,7 +845,10 @@ function TrueFalsePreview({ slide, onAnswer, answered }) {
       </div>
       {show && (
         <div style={{ marginTop: 16, padding: "12px 16px", borderRadius: 10, background: answered === slide.correct ? "#22c55e10" : "#ef444410", color: answered === slide.correct ? "#4ade80" : "#f87171", fontSize: 14, fontWeight: 500 }}>
-          {answered === slide.correct ? "✅ Bonne réponse !" : `❌ Mauvaise réponse. La bonne réponse était : ${slide.correct ? "Vrai" : "Faux"}`}
+          <span className={answered === slide.correct ? "lf-icon-success" : "lf-icon-error"} style={{ display: "inline-flex", verticalAlign: "middle", marginRight: 6 }}>
+            {answered === slide.correct ? <Icons.CheckCircle size={16} /> : <Icons.XCircle size={16} />}
+          </span>
+          {answered === slide.correct ? "Bonne réponse !" : `Mauvaise réponse. La bonne réponse était : ${slide.correct ? "Vrai" : "Faux"}`}
         </div>
       )}
     </div>
@@ -851,7 +884,7 @@ function QuizPreview({ slide, onAnswer, answered }) {
     onAnswer(ans);
   };
 
-  const retry = () => { setSelected(new Set()); setLocalAnswered(undefined); };
+  const retry = () => { setSelected(new Set()); setLocalAnswered(undefined); onAnswer(undefined); };
 
   const isSelected = (i) => submitted ? (Array.isArray(effectiveAnswered) ? effectiveAnswered.includes(i) : effectiveAnswered === i) : selected.has(i);
   const isCorrect = (i) => correct.includes(i);
@@ -885,7 +918,7 @@ function QuizPreview({ slide, onAnswer, answered }) {
           return (
             <button key={i} onClick={() => toggle(i)} style={{ background: bg, border: bdr, color: clr, padding: "14px 18px", borderRadius: 12, cursor: submitted ? "default" : "pointer", textAlign: "left", fontSize: 15, transition: "all 0.2s", display: "flex", alignItems: "center", gap: 12, fontFamily: "'DM Sans', sans-serif" }}>
               <span style={{ width: 28, height: 28, borderRadius: 8, background: (submitted && allCorrect && cor) ? "#22c55e33" : (!submitted && sel) ? "#7c3aed33" : "#1a1a2e", border: !submitted ? (sel ? "2px solid #7c3aed" : "2px solid #2a2a3e") : "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600, flexShrink: 0 }}>
-                {(submitted && allCorrect && cor) || (!submitted && sel) ? "✓" : String.fromCharCode(65 + i)}
+                {(submitted && allCorrect && cor) || (!submitted && sel) ? <Icons.Check /> : String.fromCharCode(65 + i)}
               </span>
               {opt}
             </button>
@@ -897,16 +930,18 @@ function QuizPreview({ slide, onAnswer, answered }) {
           {remaining > 0 ? `Vérifier (${remaining} restant${remaining > 1 ? "s" : ""})` : "Vérifier"}
         </button>
       ) : allCorrect ? (
-        <div style={{ marginTop: 16, padding: "12px 16px", borderRadius: 10, background: "#22c55e10", color: "#4ade80", fontSize: 14, fontWeight: 500 }}>
-          ✅ Bonne réponse !
+        <div className="lf-msg-in" style={{ marginTop: 16, padding: "12px 16px", borderRadius: 10, background: "#22c55e10", color: "#4ade80", fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", gap: 8 }}>
+          <span className="lf-icon-success" style={{ display: "flex" }}><Icons.CheckCircle size={16} /></span>
+          Bonne réponse !
         </div>
       ) : (
         <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 10, background: "#ef444410", border: "1px solid #ef444422", display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-end" }}>
-          <span style={{ flex: 1, minWidth: 160, color: "#f87171", fontSize: 14, fontWeight: 500, lineHeight: 1.6 }}>
-            ❌ {slide.wrongMessage || "Mauvaise réponse."}
+          <span style={{ flex: 1, minWidth: 160, color: "#f87171", fontSize: 14, fontWeight: 500, lineHeight: 1.6, display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <span className="lf-icon-error" style={{ display: "flex", flexShrink: 0, marginTop: 2 }}><Icons.XCircle size={16} /></span>
+            {slide.wrongMessage || "Mauvaise réponse."}
           </span>
-          <button onClick={retry} style={{ ...S.btnSec, flexShrink: 0, marginLeft: "auto", fontSize: 13, border: "1px solid #ef444433", color: "#f87171", background: "#ef444410" }}>
-            ↺ Réessayer
+          <button onClick={retry} style={{ ...S.btnSec, flexShrink: 0, marginLeft: "auto", fontSize: 13, border: "1px solid #ef444433", color: "#f87171", background: "#ef444410", display: "flex", alignItems: "center", gap: 6 }}>
+            <Icons.RotateCcw size={13} /> Réessayer
           </button>
         </div>
       )}
@@ -1136,14 +1171,20 @@ function CodeSlidePreview({ slide }) {
   const stop = () => {
     if (cleanupRef.current) cleanupRef.current();
     if (workerRef.current)  { workerRef.current.terminate(); workerRef.current = null; clearTimeout(timerRef.current); setRunning(false); setPyStatus("idle"); }
-    addLog({ type: "warn", text: "⏹ Exécution arrêtée manuellement" });
+    addLog({ type: "warn", text: "Exécution arrêtée manuellement" });
   };
 
   const reset = () => { setLogs([]); setHasRun(false); setHtmlContent(null); };
 
   /* ── Helpers affichage ──────────────────────────────────── */
   const typeColor  = { error: "#f87171", warn: "#fbbf24", return: "#a78bfa", info: "#60a5fa" };
-  const typePrefix = { error: "✕ ", warn: "⚠ ", return: "← ", info: "ℹ " };
+  const TypeIcon = ({ type }) => {
+    if (type === "error")  return <Icons.X size={12} />;
+    if (type === "warn")   return <Icons.AlertTriangle size={12} />;
+    if (type === "return") return <Icons.ChevronLeft size={12} />;
+    if (type === "info")   return <Icons.InfoIcon size={12} />;
+    return <span style={{ fontSize: 10 }}>›</span>;
+  };
 
   const showConsole = (execMode === "js" || execMode === "python") && hasRun;
   const showHtml    = execMode === "html" && hasRun && htmlContent;
@@ -1198,15 +1239,15 @@ function CodeSlidePreview({ slide }) {
             </div>
             <div style={{ display: "flex", gap: 6 }}>
               {slide.editable && userCode !== (slide.code || "") && (
-                <button onClick={() => { setUserCode(slide.code || ""); setLogs([]); setHasRun(false); setHtmlContent(null); }} style={{ ...S.btnSec, padding: "3px 10px", fontSize: 11, color: "#f87171", border: "1px solid #ef444433" }}>↺ Réinitialiser</button>
+                <button onClick={() => { setUserCode(slide.code || ""); setLogs([]); setHasRun(false); setHtmlContent(null); }} style={{ ...S.btnSec, padding: "3px 10px", fontSize: 11, color: "#f87171", border: "1px solid #ef444433", display: "inline-flex", alignItems: "center", gap: 5 }}><Icons.RotateCcw size={11} /> Réinitialiser</button>
               )}
               {hasRun && !running && (
                 <button onClick={reset} style={{ ...S.btnSec, padding: "3px 10px", fontSize: 11 }}>Effacer</button>
               )}
               {running ? (
-                <button onClick={stop} style={{ ...S.btnSec, padding: "3px 12px", fontSize: 11, color: "#ef4444", border: "1px solid #ef444433" }}>⏹ Stop</button>
+                <button onClick={stop} style={{ ...S.btnSec, padding: "3px 12px", fontSize: 11, color: "#ef4444", border: "1px solid #ef444433", display: "inline-flex", alignItems: "center", gap: 5 }}><Icons.Square size={10} /> Stop</button>
               ) : (
-                <button onClick={run} style={{ ...S.btnPri, padding: "3px 12px", fontSize: 11 }}>▶ Exécuter</button>
+                <button onClick={run} style={{ ...S.btnPri, padding: "3px 12px", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 5 }}><Icons.Play size={10} /> Exécuter</button>
               )}
             </div>
           </div>
@@ -1229,7 +1270,7 @@ function CodeSlidePreview({ slide }) {
             ) : (
               logs.map((line, i) => (
                 <div key={i} style={{ display: "flex", gap: 8, color: typeColor[line.type] || "#e2e8f0", fontStyle: line.type === "return" ? "italic" : "normal" }}>
-                  <span style={{ opacity: 0.4, userSelect: "none", flexShrink: 0 }}>{typePrefix[line.type] || "› "}</span>
+                  <span style={{ opacity: 0.5, userSelect: "none", flexShrink: 0, display: "flex", alignItems: "center" }}><TypeIcon type={line.type} /></span>
                   <pre style={{ margin: 0, fontFamily: "inherit", fontSize: "inherit", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{line.text}</pre>
                 </div>
               ))
@@ -1313,7 +1354,7 @@ function AddSlideModal({ onAdd, onClose }) {
         <div style={{ display: "grid", gridTemplateColumns: `repeat(${layout.cols}, 1fr)`, gridAutoRows: 96, gap: 10 }}>
           {SLIDE_TYPES.map(type => (
             <button key={type.id} onClick={() => { onAdd(type.id); onClose(); }} style={{ background: "#1e1e2e", border: "2px solid #2a2a3e", borderRadius: 14, padding: 16, cursor: "pointer", textAlign: "left", transition: "all 0.2s", display: "flex", flexDirection: "column", gap: 4, height: "100%" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "#7c3aed"; e.currentTarget.style.background = "#7c3aed10"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "#2a2a3e"; e.currentTarget.style.background = "#1e1e2e"; }}>
-              <span style={{ fontSize: 24 }}>{type.icon}</span>
+              <span style={{ display: "flex", color: "#a78bfa" }}>{(() => { const Ic = Icons[type.icon] || Icons.FileText; return <Ic size={22} />; })()}</span>
               <span style={{ color: "#f1f5f9", fontWeight: 600, fontSize: 14, fontFamily: "'DM Sans', sans-serif" }}>{type.label}</span>
               <span style={{ color: "#64748b", fontSize: 12, fontFamily: "'DM Sans', sans-serif", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{type.desc}</span>
             </button>
@@ -1358,6 +1399,10 @@ export default function CourseBuilder() {
   const [expandedModules, setExpandedModules] = useState({ 0: true });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // Live panel state (edit mode)
+  const [liveFlips, setLiveFlips] = useState({});
+  const [liveAnswers, setLiveAnswers] = useState({});
 
   // Preview state
   const [previewModuleIdx, setPreviewModuleIdx] = useState(0);
@@ -1523,7 +1568,8 @@ export default function CourseBuilder() {
 
   const SlideIcon = ({ type }) => {
     const t = SLIDE_TYPES.find(s => s.id === type);
-    return <span style={{ fontSize: 14 }}>{t?.icon || "📄"}</span>;
+    const Ic = Icons[t?.icon] || Icons.FileText;
+    return <span style={{ display: "flex", color: "#7c3aed" }}><Ic size={14} /></span>;
   };
 
   const editorMap = { text: TextSlideEditor, image: ImageSlideEditor, flip: FlipCardEditor, quiz: QuizSlideEditor, code: CodeSlideEditor, separator: SeparatorSlideEditor, fillblank: FillBlankSlideEditor, truefalse: TrueFalseSlideEditor, reveal: RevealSlideEditor };
@@ -1541,6 +1587,25 @@ export default function CourseBuilder() {
         ::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 4px; }
         input:focus, textarea:focus { outline: none; border-color: #7c3aed !important; box-shadow: 0 0 0 3px #7c3aed22; }
         button { font-family: 'DM Sans', sans-serif; }
+        @keyframes lf-pop {
+          0%   { transform: scale(0.4) rotate(-8deg); opacity: 0; }
+          65%  { transform: scale(1.15) rotate(2deg); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes lf-shake {
+          0%,100% { transform: translateX(0); }
+          20%     { transform: translateX(-4px) rotate(-4deg); }
+          40%     { transform: translateX(4px) rotate(4deg); }
+          60%     { transform: translateX(-2px); }
+          80%     { transform: translateX(2px); }
+        }
+        @keyframes lf-fade-up {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .lf-icon-success { animation: lf-pop 0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
+        .lf-icon-error   { animation: lf-shake 0.4s ease both; }
+        .lf-msg-in       { animation: lf-fade-up 0.25s ease both; }
       `}</style>
 
       {toast && (
@@ -1611,7 +1676,9 @@ export default function CourseBuilder() {
               </>
             )}
             <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} style={{ padding: 12, border: "none", background: "#1a1a2a", color: "#64748b", cursor: "pointer", fontSize: 12, fontFamily: "'DM Sans', sans-serif", borderTop: "1px solid #1e1e2e", marginTop: "auto" }}>
-              {sidebarCollapsed ? "→" : "← Réduire"}
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                {sidebarCollapsed ? <Icons.ChevronRight size={14} /> : <><Icons.ChevronLeft size={14} /> Réduire</>}
+              </span>
             </button>
           </aside>
         )}
@@ -1632,7 +1699,7 @@ export default function CourseBuilder() {
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "#475569" }}>
-                <div style={{ fontSize: 48, marginBottom: 16 }}>📝</div>
+                <div style={{ color: "#2a2a4a", marginBottom: 16 }}><Icons.FileText size={48} /></div>
                 <p style={{ fontSize: 16, fontWeight: 500 }}>Aucune slide sélectionnée</p>
                 <button onClick={() => setShowAddSlide(true)} style={{ ...S.btnPri, marginTop: 20 }}><Icons.Plus /> Ajouter une slide</button>
               </div>
@@ -1668,7 +1735,13 @@ export default function CourseBuilder() {
                         boxShadow: isActive ? "0 0 0 2px #7c3aed55, 0 8px 40px rgba(124,58,237,0.15)" : "none",
                       }}
                     >
-                      <PreviewSlide slide={slide} onAnswer={() => {}} answered={undefined} flippedCards={{}} onFlipCard={() => {}} />
+                      <PreviewSlide
+                        slide={slide}
+                        onAnswer={(ans) => setLiveAnswers(p => ({ ...p, [slide.id]: ans }))}
+                        answered={liveAnswers[slide.id]}
+                        flippedCards={liveFlips}
+                        onFlipCard={(id) => setLiveFlips(p => ({ ...p, [id]: !p[id] }))}
+                      />
                     </div>
                   );
                 })}
@@ -1690,7 +1763,7 @@ export default function CourseBuilder() {
                     color: previewModuleIdx === mi ? "#fff" : "#94a3b8",
                     whiteSpace: "nowrap", fontFamily: "'DM Sans', sans-serif", transition: "all 0.2s",
                   }}>
-                    {computeProgress(mi) >= 100 && mi !== previewModuleIdx && <span style={{ marginRight: 4 }}>✓</span>}
+                    {computeProgress(mi) >= 100 && mi !== previewModuleIdx && <span style={{ marginRight: 4, display: "inline-flex", verticalAlign: "middle" }}><Icons.Check /></span>}
                     {mod.title}
                   </button>
                 ))}
@@ -1738,8 +1811,8 @@ export default function CourseBuilder() {
 
             {/* Bottom: module navigation */}
             <div style={{ background: "#12121e", borderTop: "1px solid #1e1e2e", padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-              <button onClick={() => setPreviewModuleIdx(Math.max(0, previewModuleIdx - 1))} disabled={previewModuleIdx === 0} style={{ ...S.btnSec, opacity: previewModuleIdx === 0 ? 0.3 : 1, cursor: previewModuleIdx === 0 ? "default" : "pointer" }}>
-                ← Module précédent
+              <button onClick={() => setPreviewModuleIdx(Math.max(0, previewModuleIdx - 1))} disabled={previewModuleIdx === 0} style={{ ...S.btnSec, opacity: previewModuleIdx === 0 ? 0.3 : 1, cursor: previewModuleIdx === 0 ? "default" : "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <Icons.ChevronLeft size={14} /> Module précédent
               </button>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 {course.modules.map((_, i) => (
@@ -1747,10 +1820,14 @@ export default function CourseBuilder() {
                 ))}
               </div>
               {previewModuleIdx < course.modules.length - 1 ? (
-                <button onClick={() => setPreviewModuleIdx(previewModuleIdx + 1)} style={S.btnPri}>Module suivant →</button>
+                <button onClick={() => setPreviewModuleIdx(previewModuleIdx + 1)} style={{ ...S.btnPri, display: "inline-flex", alignItems: "center", gap: 6 }}>Module suivant <Icons.ChevronRight size={14} /></button>
               ) : (
                 <button onClick={() => setMode("certificate")} style={{ ...S.btnPri, background: progress >= 100 ? "linear-gradient(135deg, #22c55e, #10b981)" : "#7c3aed" }}>
-                  {progress >= 100 ? "🎓 Obtenir le certificat" : "Voir le certificat →"}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    {progress >= 100
+                      ? <><Icons.GraduationCap size={16} /> Obtenir le certificat</>
+                      : <>Voir le certificat <Icons.ChevronRight size={14} /></>}
+                  </span>
                 </button>
               )}
             </div>
@@ -1767,9 +1844,9 @@ export default function CourseBuilder() {
               <div style={{ marginTop: 24, padding: 20, background: "#12121e", borderRadius: 14, border: "1px solid #1e1e2e" }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "#475569", letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 12 }}>Conditions d'obtention</span>
                 <div style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.8 }}>
-                  <p style={{ margin: "0 0 8px", display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: "#7c3aed" }}>📜</span> Scroller 100% du contenu de chaque module</p>
-                  <p style={{ margin: "0 0 8px", display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: "#7c3aed" }}>🔄</span> Retourner toutes les cartes interactives</p>
-                  <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: "#7c3aed" }}>✅</span> Répondre correctement à tous les quiz</p>
+                  <p style={{ margin: "0 0 8px", display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: "#7c3aed", display: "flex" }}><Icons.ScrollText size={15} /></span> Scroller 100% du contenu de chaque module</p>
+                  <p style={{ margin: "0 0 8px", display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: "#7c3aed", display: "flex" }}><Icons.Flip /></span> Retourner toutes les cartes interactives</p>
+                  <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: "#7c3aed", display: "flex" }}><Icons.CheckCircle size={15} /></span> Répondre correctement à tous les quiz</p>
                 </div>
               </div>
             </div>
