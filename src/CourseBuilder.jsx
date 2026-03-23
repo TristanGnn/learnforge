@@ -326,26 +326,8 @@ function CodeSlideEditor({ slide, onChange }) {
         <option value="">— Choisir un langage —</option>
         {CODE_LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
       </select>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#12121e", border: "1px solid #1e1e2e", borderRadius: 10, padding: "12px 16px" }}>
-        <div>
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>Modification autorisée</span>
-          <span style={{ fontSize: 12, color: "#475569", marginLeft: 10 }}>L'apprenant peut éditer le code</span>
-        </div>
-        <div onClick={() => onChange({ ...slide, editable: !slide.editable })} style={{ width: 44, height: 24, borderRadius: 12, background: slide.editable ? "#7c3aed" : "#2a2a3e", cursor: "pointer", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
-          <div style={{ position: "absolute", top: 3, left: slide.editable ? 23 : 3, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.3)" }} />
-        </div>
-      </div>
-      <label style={S.label}>Code {(slide.language || "").toLowerCase() === "css" ? "CSS" : ""}</label>
+      <label style={S.label}>Code</label>
       <AutoTextarea tabEnabled style={{ ...S.input, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }} minHeight={180} value={slide.code || ""} onChange={e => onChange({ ...slide, code: e.target.value })} />
-      {(slide.language || "").toLowerCase() === "css" && (
-        <>
-          <label style={S.label}>HTML à styliser</label>
-          <div style={{ background: "#7c3aed10", border: "1px solid #7c3aed33", borderRadius: 10, padding: "10px 14px" }}>
-            <p style={{ color: "#a78bfa", fontSize: 12, margin: 0 }}>Ce HTML sera affiché dans l'aperçu avec votre CSS appliqué dessus. Laissez vide pour utiliser des éléments de démonstration par défaut.</p>
-          </div>
-          <AutoTextarea tabEnabled style={{ ...S.input, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }} minHeight={120} value={slide.htmlContext || ""} onChange={e => onChange({ ...slide, htmlContext: e.target.value })} placeholder={"<h1>Mon titre</h1>\n<p>Mon paragraphe</p>"} />
-        </>
-      )}
       <label style={S.label}>Explication</label>
       <AutoTextarea style={S.input} minHeight={80} value={slide.content || ""} onChange={e => onChange({ ...slide, content: e.target.value })} />
     </div>
@@ -555,10 +537,18 @@ function FillBlankSlideEditor({ slide, onChange }) {
                 if (/^\s+$/.test(token)) return <span key={`${si}-${ti}`}>{token}</span>;
                 const before = seg.text.slice(0, start);
                 const after = seg.text.slice(start + token.length);
+                const punctMatch = token.match(/^([.,;:!?«»"'()\[\]{}…\-–—]*)([^\s.,;:!?«»"'()\[\]{}…\-–—]+)([.,;:!?«»"'()\[\]{}…\-–—]*)$/);
+                const word = punctMatch ? punctMatch[2] : token;
+                const prefixPunct = punctMatch ? punctMatch[1] : "";
+                const suffixPunct = punctMatch ? punctMatch[3] : "";
+                const handleClick = () => makeBlank(si, word,
+                  before + prefixPunct,
+                  suffixPunct + after
+                );
                 return (
                   <span
                     key={`${si}-${ti}`}
-                    onClick={() => makeBlank(si, token, before, after)}
+                    onClick={handleClick}
                     title="Cliquer pour créer un trou"
                     style={{ borderRadius: 4, padding: "2px 1px", cursor: "pointer", transition: "background 0.15s" }}
                     onMouseEnter={e => { e.currentTarget.style.background = "#7c3aed22"; e.currentTarget.style.color = "#c4b5fd"; }}
@@ -571,12 +561,31 @@ function FillBlankSlideEditor({ slide, onChange }) {
             })}
           </div>
 
-          <button
-            onClick={() => { setDraftText(plainText); setEditingText(true); }}
-            style={{ ...S.btnSec, alignSelf: "flex-start", fontSize: 12 }}
-          >
-            ✎ Modifier le texte
-          </button>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <button
+              onClick={() => { setDraftText(plainText); setEditingText(true); }}
+              style={{ ...S.btnSec, alignSelf: "flex-start", fontSize: 12 }}
+            >
+              <Icons.PencilLine size={13} /> Modifier le texte
+            </button>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none" }}>
+              <div
+                onClick={() => onChange({ ...slide, wordBank: !slide.wordBank })}
+                style={{
+                  width: 36, height: 20, borderRadius: 10, position: "relative", cursor: "pointer", flexShrink: 0,
+                  background: slide.wordBank ? "#7c3aed" : "#1e1e2e",
+                  border: `2px solid ${slide.wordBank ? "#7c3aed" : "#2a2a3e"}`,
+                  transition: "background 0.2s, border-color 0.2s",
+                }}
+              >
+                <div style={{
+                  position: "absolute", top: 1, left: slide.wordBank ? 17 : 1, width: 14, height: 14,
+                  borderRadius: "50%", background: "#fff", transition: "left 0.2s",
+                }} />
+              </div>
+              <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>Banque de mots</span>
+            </label>
+          </div>
           <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>Désactivez la traduction automatique du navigateur pour éviter tout comportement inattendu.</p>
 
           {blanks.length > 0 && (
@@ -689,17 +698,230 @@ function FlipCard({ slide, flipped, onFlip }) {
 function FillBlankPreview({ slide }) {
   const segments = slide.segments || [];
   const blanks = segments.filter(s => s.type === "blank");
+  const wordBank = !!slide.wordBank;
+
+  // Mode saisie libre
   const [answers, setAnswers] = useState({});
   const [checked, setChecked] = useState(false);
 
+  // Mode banque de mots
+  const [placed, setPlaced] = useState({});       // { blankId: { word, tokenIdx } }
+  const [usedTokens, setUsedTokens] = useState(new Set());
+  const [bankChecked, setBankChecked] = useState(false);
+  const [dragOverSlot, setDragOverSlot] = useState(null);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const dragData = useRef(null);
+
+  const blankIds = blanks.map(b => b.id).join(",");
+  const shuffleCache = useRef({ key: null, words: [] });
+  const cacheKey = `${blankIds}|${shuffleSeed}`;
+  if (shuffleCache.current.key !== cacheKey) {
+    const words = blanks.map((b, i) => ({ word: b.word, tokenIdx: i }));
+    for (let i = words.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [words[i], words[j]] = [words[j], words[i]];
+    }
+    shuffleCache.current = { key: cacheKey, words };
+  }
+  const shuffledWords = shuffleCache.current.words;
+
   const isBlankCorrect = (blank) => {
+    if (wordBank) {
+      const tok = placed[blank.id];
+      if (!tok) return false;
+      return blank.alternatives.some(alt => alt.toLowerCase() === tok.word.toLowerCase());
+    }
     const answer = (answers[blank.id] || "").trim().toLowerCase();
     return blank.alternatives.some(alt => alt.toLowerCase() === answer);
   };
 
   const allCorrect = blanks.length > 0 && blanks.every(isBlankCorrect);
   const score = blanks.length > 0 ? blanks.filter(isBlankCorrect).length : 0;
+  const allFilled = wordBank
+    ? blanks.every(b => placed[b.id] !== undefined)
+    : blanks.every(b => (answers[b.id] || "").trim() !== "");
 
+  // Clic mot banque → premier slot vide
+  const handleBankClick = (tok) => {
+    if (bankChecked || usedTokens.has(tok.tokenIdx)) return;
+    const firstEmpty = blanks.find(b => !placed[b.id]);
+    if (!firstEmpty) return;
+    setPlaced(p => ({ ...p, [firstEmpty.id]: tok }));
+    setUsedTokens(u => new Set([...u, tok.tokenIdx]));
+  };
+
+  // Clic mot dans slot → retour banque
+  const handleSlotClick = (blankId) => {
+    if (bankChecked) return;
+    const tok = placed[blankId];
+    if (!tok) return;
+    setPlaced(p => { const n = { ...p }; delete n[blankId]; return n; });
+    setUsedTokens(u => { const n = new Set(u); n.delete(tok.tokenIdx); return n; });
+  };
+
+  // Drag depuis banque
+  const onDragStartBank = (e, tok) => {
+    dragData.current = { source: "bank", tok };
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  // Drag depuis slot
+  const onDragStartSlot = (e, tok, fromBlankId) => {
+    dragData.current = { source: "slot", tok, fromBlankId };
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  // Drop sur slot
+  const onDropSlot = (e, toBlankId) => {
+    e.preventDefault();
+    setDragOverSlot(null);
+    if (!dragData.current || bankChecked) return;
+    const { source, tok, fromBlankId } = dragData.current;
+    dragData.current = null;
+
+    if (source === "bank") {
+      const existing = placed[toBlankId];
+      const newPlaced = { ...placed, [toBlankId]: tok };
+      const newUsed = new Set(usedTokens);
+      if (existing) newUsed.delete(existing.tokenIdx);
+      newUsed.add(tok.tokenIdx);
+      setPlaced(newPlaced);
+      setUsedTokens(newUsed);
+    } else {
+      if (fromBlankId === toBlankId) return;
+      const existing = placed[toBlankId];
+      const newPlaced = { ...placed, [toBlankId]: tok };
+      if (existing) newPlaced[fromBlankId] = existing;
+      else delete newPlaced[fromBlankId];
+      setPlaced(newPlaced);
+    }
+  };
+
+  const resetBank = () => { setPlaced({}); setUsedTokens(new Set()); setBankChecked(false); setDragOverSlot(null); setShuffleSeed(s => s + 1); };
+
+  if (wordBank) {
+    return (
+      <div style={S.pCard}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+          <span style={{ background: "#7c3aed22", color: "#a78bfa", padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600 }}>TEXTE À TROUS</span>
+          <h2 style={{ ...S.pTitle, margin: 0 }}>{slide.title}</h2>
+        </div>
+
+        {/* Texte avec slots */}
+        <div style={{ fontSize: 16, lineHeight: 3, color: "#e2e8f0", marginBottom: 28 }}>
+          {segments.map((seg, i) => {
+            if (seg.type === "text") return <span key={i}>{seg.text}</span>;
+            const tok = placed[seg.id];
+            const isDragOver = dragOverSlot === seg.id;
+            const minW = Math.max(70, seg.word.length * 10 + 24);
+
+            if (tok) {
+              return (
+                <span
+                  key={seg.id}
+                  draggable={!bankChecked}
+                  onDragStart={e => onDragStartSlot(e, tok, seg.id)}
+                  onDragOver={e => { e.preventDefault(); setDragOverSlot(seg.id); }}
+                  onDragLeave={() => setDragOverSlot(null)}
+                  onDrop={e => onDropSlot(e, seg.id)}
+                  onClick={() => handleSlotClick(seg.id)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    verticalAlign: "middle", margin: "0 4px", minWidth: minW,
+                    padding: "4px 16px", borderRadius: 20, cursor: bankChecked ? "default" : "grab",
+                    fontWeight: 600, fontSize: 14, transition: "all 0.2s", userSelect: "none",
+                    background: isDragOver ? "#7c3aed40" : "#7c3aed22",
+                    border: `2px solid ${isDragOver ? "#7c3aed" : "#7c3aed88"}`,
+                    color: "#c4b5fd",
+                    boxShadow: isDragOver ? "0 0 0 3px #7c3aed33" : "none",
+                  }}
+                >
+                  {tok.word}
+                </span>
+              );
+            }
+
+            // Slot vide — pill pointillée drop zone
+            return (
+              <span
+                key={seg.id}
+                onDragOver={e => { e.preventDefault(); setDragOverSlot(seg.id); }}
+                onDragLeave={() => setDragOverSlot(null)}
+                onDrop={e => onDropSlot(e, seg.id)}
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  verticalAlign: "middle", margin: "0 4px", minWidth: minW,
+                  padding: "4px 16px", borderRadius: 20,
+                  border: `2px dashed ${isDragOver ? "#7c3aed" : "#2a2a3e"}`,
+                  background: isDragOver ? "#7c3aed18" : "transparent",
+                  transition: "all 0.2s",
+                  boxShadow: isDragOver ? "0 0 0 3px #7c3aed22" : "none",
+                }}
+              >
+                <span style={{ fontSize: 12, color: isDragOver ? "#a78bfa" : "#2a2a3e" }}>···</span>
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Banque de mots */}
+        <div style={{ borderTop: "1px solid #1e1e2e", paddingTop: 18, marginBottom: 20 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: "#334155", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 14 }}>
+            Mots disponibles
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {shuffledWords.map((tok) => {
+              const used = usedTokens.has(tok.tokenIdx);
+              return (
+                <span
+                  key={tok.tokenIdx}
+                  draggable={!used && !bankChecked}
+                  onDragStart={e => onDragStartBank(e, tok)}
+                  onClick={() => handleBankClick(tok)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    padding: "4px 16px", borderRadius: 20, fontSize: 14, fontWeight: 600,
+                    transition: "all 0.2s", userSelect: "none",
+                    cursor: used || bankChecked ? "default" : "grab",
+                    background: used ? "#0f0f18" : "#1a1a2e",
+                    border: `2px solid ${used ? "#1a1a2e" : "#2a2a3e"}`,
+                    color: used ? "#2a2a4a" : "#94a3b8",
+                    textDecoration: used ? "line-through" : "none",
+                    opacity: 1,
+                  }}
+                  onMouseEnter={e => { if (!used && !bankChecked) { e.currentTarget.style.borderColor = "#7c3aed88"; e.currentTarget.style.color = "#c4b5fd"; e.currentTarget.style.background = "#7c3aed18"; } }}
+                  onMouseLeave={e => { if (!used && !bankChecked) { e.currentTarget.style.borderColor = "#2a2a3e"; e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.background = "#1a1a2e"; } }}
+                >
+                  {tok.word}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Boutons */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          {!bankChecked ? (
+            <button onClick={() => setBankChecked(true)} disabled={!allFilled} style={{ ...S.btnPri, opacity: allFilled ? 1 : 0.4 }}>
+              Vérifier les réponses
+            </button>
+          ) : (
+            <>
+              <div className="lf-msg-in" style={{ padding: "10px 16px", borderRadius: 10, background: allCorrect ? "#22c55e10" : "#ef444410", color: allCorrect ? "#4ade80" : "#f87171", fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", gap: 8 }}>
+                <span className={allCorrect ? "lf-icon-success" : "lf-icon-error"} style={{ display: "flex" }}>
+                  {allCorrect ? <Icons.CheckCircle size={16} /> : <Icons.XCircle size={16} />}
+                </span>
+                {allCorrect ? "Parfait ! Toutes les réponses sont correctes." : `${score} / ${blanks.length} correcte${score > 1 ? "s" : ""}`}
+              </div>
+              <button onClick={resetBank} style={S.btnSec}><Icons.RotateCcw size={13} /> Réessayer</button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Mode saisie libre (original)
   return (
     <div style={S.pCard}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
@@ -710,8 +932,6 @@ function FillBlankPreview({ slide }) {
         {segments.map((seg, i) => {
           if (seg.type === "text") return <span key={i}>{seg.text}</span>;
           const answer = answers[seg.id] || "";
-          const correct = checked && isBlankCorrect(seg);
-          const wrong = checked && !correct;
           return (
             <span key={seg.id} style={{ display: "inline-flex", alignItems: "center", verticalAlign: "middle", margin: "0 3px" }}>
               <input
@@ -719,47 +939,30 @@ function FillBlankPreview({ slide }) {
                 onChange={e => { if (!checked) setAnswers(p => ({ ...p, [seg.id]: e.target.value })); }}
                 style={{
                   width: Math.max(80, seg.word.length * 12 + 20),
-                  background: correct ? "#22c55e14" : wrong ? "#ef444414" : "#0c0c14",
-                  border: `2px solid ${correct ? "#22c55e88" : wrong ? "#ef444488" : "#7c3aed55"}`,
-                  borderRadius: 8,
-                  color: correct ? "#4ade80" : wrong ? "#f87171" : "#e2e8f0",
-                  padding: "3px 10px",
-                  fontSize: 15,
-                  fontFamily: "'DM Sans', sans-serif",
-                  textAlign: "center",
-                  outline: "none",
-                  transition: "all 0.2s",
+                  background: "#0c0c14",
+                  border: "2px solid #7c3aed55",
+                  borderRadius: 8, color: "#e2e8f0",
+                  padding: "3px 10px", fontSize: 15, fontFamily: "'DM Sans', sans-serif",
+                  textAlign: "center", outline: "none", transition: "all 0.2s",
                 }}
                 placeholder="..."
               />
-              {wrong && <span style={{ fontSize: 12, color: "#22c55e", marginLeft: 5, fontWeight: 600 }}>({seg.word})</span>}
             </span>
           );
         })}
       </div>
       <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         {!checked ? (
-          <button
-            onClick={() => setChecked(true)}
-            disabled={blanks.length === 0}
-            style={{ ...S.btnPri, opacity: blanks.length === 0 ? 0.4 : 1 }}
-          >
+          <button onClick={() => setChecked(true)} disabled={blanks.length === 0} style={{ ...S.btnPri, opacity: blanks.length === 0 ? 0.4 : 1 }}>
             Vérifier les réponses
           </button>
         ) : (
           <>
-            <div style={{
-              padding: "10px 16px", borderRadius: 10,
-              background: allCorrect ? "#22c55e10" : "#ef444410",
-              color: allCorrect ? "#4ade80" : "#f87171",
-              fontSize: 14, fontWeight: 500,
-            }}>
+            <div style={{ padding: "10px 16px", borderRadius: 10, background: allCorrect ? "#22c55e10" : "#ef444410", color: allCorrect ? "#4ade80" : "#f87171", fontSize: 14, fontWeight: 500 }}>
               <span className={allCorrect ? "lf-icon-success" : "lf-icon-error"} style={{ display: "inline-flex", verticalAlign: "middle", marginRight: 6 }}>
                 {allCorrect ? <Icons.CheckCircle size={16} /> : <Icons.XCircle size={16} />}
               </span>
-              {allCorrect
-                ? "Parfait ! Toutes les réponses sont correctes."
-                : `${score} / ${blanks.length} correcte${score > 1 ? "s" : ""}`}
+              {allCorrect ? "Parfait ! Toutes les réponses sont correctes." : `${score} / ${blanks.length} correcte${score > 1 ? "s" : ""}`}
             </div>
             <button onClick={() => { setAnswers({}); setChecked(false); }} style={S.btnSec}>
               Réessayer
@@ -1005,199 +1208,13 @@ function ImageSlidePreview({ slide }) {
              Timeout 10s, arrêt manuel
    ─────────────────────────────────────────────────────────── */
 
-const EXEC_JS_LANGS   = ["javascript", "js", "jsx", "typescript", "ts", "tsx", "node"];
-const EXEC_HTML_LANGS = ["html", "css"];
-
-// HTML injecté dans l'iframe JS — le code utilisateur est envoyé
-// via postMessage APRÈS le chargement (jamais embarqué dans le srcdoc).
-// Cela évite tout risque d'injection via </script> dans le code.
-const JS_IFRAME_HTML = [
-  "<!DOCTYPE html><html>",
-  "<head>",
-  "<meta http-equiv=\"Content-Security-Policy\"",
-  " content=\"default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline';\">",
-  "</head><body><script>(function(){",
-  "function fmt(v){",
-  "  if(v===null)return'null';",
-  "  if(v===undefined)return'undefined';",
-  "  if(typeof v==='object'){try{return JSON.stringify(v,null,2)}catch(e){return String(v)}}",
-  "  return String(v)",
-  "}",
-  "function send(t,m){parent.postMessage({t:t,m:m},'*')}",
-  "console.log   =function(){send('log',  [].slice.call(arguments).map(fmt).join(' '))};",
-  "console.error =function(){send('error',[].slice.call(arguments).map(fmt).join(' '))};",
-  "console.warn  =function(){send('warn', [].slice.call(arguments).map(fmt).join(' '))};",
-  "console.info  =function(){send('info', [].slice.call(arguments).map(fmt).join(' '))};",
-  "window.onerror=function(msg){send('error',String(msg));return true};",
-  "window.addEventListener('unhandledrejection',function(e){",
-  "  send('error',e.reason&&e.reason.message?e.reason.message:String(e.reason))",
-  "});",
-  "window.addEventListener('message',function(e){",
-  "  if(!e.data||e.data.type!=='run')return;",
-  "  try{",
-  "    var r=(function(){return eval(e.data.code)})();",
-  "    if(r!==undefined)send('return',String(r))",
-  "  }catch(err){send('error',err.message)}",
-  "  send('done','')",
-  "});",
-  "send('ready','')",
-  "})()</sc"+"ript></body></html>",
-].join("");
 
 function CodeSlidePreview({ slide }) {
-  const lang = (slide.language || "").toLowerCase().trim();
-  const execMode = EXEC_JS_LANGS.includes(lang) ? "js"
-    : EXEC_HTML_LANGS.includes(lang) ? "html"
-    : lang === "python" ? "python"
-    : null;
-
-  const [logs, setLogs]           = useState([]);
-  const [running, setRunning]     = useState(false);
-  const [hasRun, setHasRun]       = useState(false);
-  const [htmlContent, setHtmlContent] = useState(null);
-  const [pyStatus, setPyStatus]   = useState("idle"); // idle | loading | ready
-  const [userCode, setUserCode]   = useState(slide.code || "");
-
-  const cleanupRef = useRef(null); // annule l'iframe JS en cours
-  const workerRef  = useRef(null); // Web Worker Python
-  const timerRef   = useRef(null); // timeout
-
-  useEffect(() => () => {
-    if (cleanupRef.current) cleanupRef.current();
-    if (workerRef.current)  workerRef.current.terminate();
-    if (timerRef.current)   clearTimeout(timerRef.current);
-  }, []);
-
-  const addLog = (log) => setLogs(prev => [...prev, log]);
-
-  /* ── JS : iframe sandboxée ──────────────────────────────── */
-  const runJS = () => {
-    setRunning(true); setLogs([]); setHasRun(true);
-
-    const iframe = document.createElement("iframe");
-    iframe.setAttribute("sandbox", "allow-scripts"); // ← JAMAIS allow-same-origin
-    iframe.style.cssText = "display:none;position:absolute;top:-9999px;left:-9999px";
-    iframe.srcdoc = JS_IFRAME_HTML;
-    document.body.appendChild(iframe);
-
-    let done = false;
-    const cleanup = () => {
-      if (done) return;
-      done = true;
-      clearTimeout(timerRef.current);
-      window.removeEventListener("message", handler);
-      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      setRunning(false);
-      cleanupRef.current = null;
-    };
-    cleanupRef.current = cleanup;
-
-    const handler = (e) => {
-      if (e.source !== iframe.contentWindow) return; // filtre par référence de fenêtre
-      const { t, m } = e.data || {};
-      if (t === "ready") {
-        // On envoie le code APRÈS chargement, jamais embarqué dans le srcdoc
-        iframe.contentWindow.postMessage({ type: "run", code: userCode }, "*");
-      } else if (t === "done") {
-        cleanup();
-      } else if (t) {
-        addLog({ type: t, text: m });
-      }
-    };
-
-    window.addEventListener("message", handler);
-    timerRef.current = setTimeout(() => {
-      addLog({ type: "error", text: "⏱ Timeout — exécution interrompue après 10 secondes" });
-      cleanup();
-    }, 10000);
-  };
-
-  /* ── HTML/CSS : iframe sandboxée visible ────────────────── */
-  const runHTML = () => {
-    setHasRun(true);
-    const csp = "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline' data:; img-src data: blob:;";
-    let content;
-    if (lang === "css") {
-      const body = slide.htmlContext
-        ? slide.htmlContext
-        : "<h1>Titre</h1><p>Paragraphe de démonstration.</p><button>Bouton</button><ul><li>Élément 1</li><li>Élément 2</li></ul>";
-      content = `<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"><style>body{font-family:sans-serif;margin:16px;color:#333}${userCode}</style></head><body>${body}</body></html>`;
-    } else {
-      content = `<!DOCTYPE html><html><head><meta http-equiv="Content-Security-Policy" content="${csp}"></head><body style="font-family:sans-serif;margin:0;padding:16px;color:#333">${userCode}</body></html>`;
-    }
-    setHtmlContent(content);
-  };
-
-  /* ── Python : Web Worker + Pyodide (WASM) ───────────────── */
-  const runPython = () => {
-    setRunning(true); setLogs([]); setHasRun(true);
-
-    // Recréer un worker propre à chaque exécution
-    if (workerRef.current) { workerRef.current.terminate(); workerRef.current = null; }
-
-    const worker = new Worker("/pyodide-worker.js");
-    workerRef.current = worker;
-    setPyStatus("loading");
-
-    worker.onmessage = (e) => {
-      const { type, text } = e.data || {};
-      if      (type === "ready")  { setPyStatus("ready"); }
-      else if (type === "stdout") { addLog({ type: "log",   text }); }
-      else if (type === "stderr") { addLog({ type: "error", text }); }
-      else if (type === "error")  { addLog({ type: "error", text }); clearTimeout(timerRef.current); setRunning(false); }
-      else if (type === "done")   { clearTimeout(timerRef.current); setPyStatus("ready"); setRunning(false); }
-    };
-    worker.onerror = (e) => {
-      addLog({ type: "error", text: e.message || "Erreur Worker" });
-      clearTimeout(timerRef.current); setRunning(false); setPyStatus("idle");
-    };
-
-    worker.postMessage({ code: userCode });
-
-    timerRef.current = setTimeout(() => {
-      worker.terminate(); workerRef.current = null;
-      addLog({ type: "error", text: "⏱ Timeout — exécution interrompue après 10 secondes" });
-      setPyStatus("idle"); setRunning(false);
-    }, 10000);
-  };
-
-  /* ── Contrôles ──────────────────────────────────────────── */
-  const run = () => {
-    if (execMode === "js")     runJS();
-    else if (execMode === "html")   runHTML();
-    else if (execMode === "python") runPython();
-  };
-
-  const stop = () => {
-    if (cleanupRef.current) cleanupRef.current();
-    if (workerRef.current)  { workerRef.current.terminate(); workerRef.current = null; clearTimeout(timerRef.current); setRunning(false); setPyStatus("idle"); }
-    addLog({ type: "warn", text: "Exécution arrêtée manuellement" });
-  };
-
-  const reset = () => { setLogs([]); setHasRun(false); setHtmlContent(null); };
-
-  /* ── Helpers affichage ──────────────────────────────────── */
-  const typeColor  = { error: "#f87171", warn: "#fbbf24", return: "#a78bfa", info: "#60a5fa" };
-  const TypeIcon = ({ type }) => {
-    if (type === "error")  return <Icons.X size={12} />;
-    if (type === "warn")   return <Icons.AlertTriangle size={12} />;
-    if (type === "return") return <Icons.ChevronLeft size={12} />;
-    if (type === "info")   return <Icons.InfoIcon size={12} />;
-    return <span style={{ fontSize: 10 }}>›</span>;
-  };
-
-  const showConsole = (execMode === "js" || execMode === "python") && hasRun;
-  const showHtml    = execMode === "html" && hasRun && htmlContent;
-  const showOutput  = showConsole || showHtml;
-
   return (
     <div style={S.pCard}>
       <h2 style={S.pTitle}>{slide.title}</h2>
       {slide.content && <p style={{ color: "#94a3b8", lineHeight: 1.7, marginBottom: 16 }}>{slide.content}</p>}
-
       <div style={{ borderRadius: 12, border: "1px solid #1e1e2e", overflow: "hidden" }}>
-
-        {/* Barre titre */}
         <div style={{ background: "#0c0c18", padding: "9px 16px", display: "flex", alignItems: "center", borderBottom: "1px solid #1e1e2e", gap: 8 }}>
           <div style={{ display: "flex", gap: 5 }}>
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#ef4444" }} />
@@ -1210,74 +1227,9 @@ function CodeSlidePreview({ slide }) {
             </span>
           )}
         </div>
-
-        {/* Code */}
-        {slide.editable ? (
-          <AutoTextarea
-            tabEnabled
-            value={userCode}
-            onChange={e => setUserCode(e.target.value)}
-            style={{ background: "#07070f", padding: "18px 20px", margin: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#e2e8f0", lineHeight: 1.7, borderBottom: "1px solid #1e1e2e", border: "none", borderBottom: "1px solid #1e1e2e", borderRadius: 0, width: "100%", caretColor: "#e2e8f0" }}
-            minHeight={60}
-          />
-        ) : (
-          <pre style={{ background: "#07070f", padding: "18px 20px", margin: 0, overflow: "auto", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#e2e8f0", lineHeight: 1.7, borderBottom: "1px solid #1e1e2e" }}>
-            {slide.code || "// ..."}
-          </pre>
-        )}
-
-        {/* Barre console/rendu + boutons */}
-        {execMode && (
-          <div style={{ background: "#0c0c18", padding: "6px 12px 6px 16px", borderBottom: showOutput ? "1px solid #1e1e2e" : "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 10, color: "#334155", fontFamily: "'JetBrains Mono', monospace", letterSpacing: 1, textTransform: "uppercase" }}>
-                {execMode === "html" ? "rendu" : "console"}
-              </span>
-              {running && execMode === "python" && pyStatus === "loading" && (
-                <span style={{ fontSize: 10, color: "#475569", fontStyle: "italic" }}>chargement Python (~10 Mo)…</span>
-              )}
-            </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              {slide.editable && userCode !== (slide.code || "") && (
-                <button onClick={() => { setUserCode(slide.code || ""); setLogs([]); setHasRun(false); setHtmlContent(null); }} style={{ ...S.btnSec, padding: "3px 10px", fontSize: 11, color: "#f87171", border: "1px solid #ef444433", display: "inline-flex", alignItems: "center", gap: 5 }}><Icons.RotateCcw size={11} /> Réinitialiser</button>
-              )}
-              {hasRun && !running && (
-                <button onClick={reset} style={{ ...S.btnSec, padding: "3px 10px", fontSize: 11 }}>Effacer</button>
-              )}
-              {running ? (
-                <button onClick={stop} style={{ ...S.btnSec, padding: "3px 12px", fontSize: 11, color: "#ef4444", border: "1px solid #ef444433", display: "inline-flex", alignItems: "center", gap: 5 }}><Icons.Square size={10} /> Stop</button>
-              ) : (
-                <button onClick={run} style={{ ...S.btnPri, padding: "3px 12px", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 5 }}><Icons.Play size={10} /> Exécuter</button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Rendu HTML/CSS */}
-        {showHtml && (
-          <iframe
-            sandbox="allow-scripts"
-            srcdoc={htmlContent}
-            style={{ width: "100%", minHeight: 200, border: "none", background: "#fff", display: "block" }}
-          />
-        )}
-
-        {/* Sortie console JS/Python */}
-        {showConsole && (
-          <div style={{ background: "#07070f", minHeight: 64, maxHeight: 240, overflow: "auto", padding: "10px 16px", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, lineHeight: 1.8 }}>
-            {logs.length === 0 ? (
-              <span style={{ color: "#1e2a3a" }}>{running ? "Exécution…" : "Aucune sortie"}</span>
-            ) : (
-              logs.map((line, i) => (
-                <div key={i} style={{ display: "flex", gap: 8, color: typeColor[line.type] || "#e2e8f0", fontStyle: line.type === "return" ? "italic" : "normal" }}>
-                  <span style={{ opacity: 0.5, userSelect: "none", flexShrink: 0, display: "flex", alignItems: "center" }}><TypeIcon type={line.type} /></span>
-                  <pre style={{ margin: 0, fontFamily: "inherit", fontSize: "inherit", whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{line.text}</pre>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-
+        <pre style={{ background: "#07070f", padding: "18px 20px", margin: 0, overflow: "auto", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: "#e2e8f0", lineHeight: 1.7 }}>
+          {slide.code || "// ..."}
+        </pre>
       </div>
     </div>
   );
