@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnForge — Roadmap</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d0d1a;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-bottom: 1px solid #2d2d4e;
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header h1 { font-size: 26px; font-weight: 800; color: #a855f7; }
+  header p { color: #64748b; font-size: 14px; margin-top: 4px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .timeline-wrapper { padding: 40px 48px; max-width: 1200px; margin: 0 auto; }
+
+  .phase-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0;
+    margin-bottom: 0;
+    position: relative;
+  }
+
+  .phase-label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 28px;
+    padding-top: 4px;
+    position: relative;
+  }
+  .phase-label::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 16px;
+    bottom: 0;
+    width: 2px;
+    background: #2d2d4e;
+  }
+  .phase-label:has(+ .phase-content:last-child)::after { bottom: 50%; }
+
+  .phase-name {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    text-align: right;
+  }
+  .phase-time {
+    font-size: 11px;
+    color: #475569;
+    margin-top: 2px;
+    text-align: right;
+  }
+
+  .phase-dot {
+    position: absolute;
+    right: -9px;
+    top: 10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid #0d0d1a;
+    z-index: 2;
+  }
+
+  .phase-content {
+    padding-left: 28px;
+    padding-bottom: 48px;
+  }
+
+  .phase-card {
+    background: #12121e;
+    border: 1px solid #2d2d4e;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .phase-card:hover { border-color: #7c3aed44; }
+
+  .phase-header {
+    padding: 18px 24px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid #1a1a2e;
+  }
+  .phase-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .phase-header-text h2 { font-size: 16px; font-weight: 700; }
+  .phase-header-text p { font-size: 12.5px; color: #64748b; margin-top: 3px; }
+
+  .phase-body { padding: 20px 24px; }
+
+  .tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #1a1a2e;
+    border-radius: 10px;
+    border: 1px solid #2d2d4e;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: #cbd5e1;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .task:hover { background: #1e1e38; border-color: #3d3d5e; }
+  .task-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .task.done .task-icon { background: #14532d; color: #86efac; }
+  .task.todo .task-icon { background: #1e3a5f; color: #93c5fd; }
+  .task.key .task-icon { background: #581c87; color: #e9d5ff; }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+    margin-bottom: 10px;
+    margin-top: 16px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: auto;
+  }
+  .status-badge.current { background: #14532d44; color: #4ade80; border: 1px solid #22c55e44; }
+  .status-badge.next { background: #1e3a8a44; color: #60a5fa; border: 1px solid #3b82f644; }
+  .status-badge.future { background: #1a1a2e; color: #475569; border: 1px solid #2d2d4e; }
+  .status-badge.done { background: #1e3a5f44; color: #64748b; border: 1px solid #2d2d4e; }
+
+  .separator { height: 1px; background: #2d2d4e; margin: 18px 0; }
+
+  /* phase colors */
+  .phase-0 .phase-dot { background: #22c55e; }
+  .phase-0 .phase-icon { background: #14532d; }
+  .phase-0 .phase-card { border-top: 3px solid #22c55e; }
+  .phase-0 .phase-header-text h2 { color: #86efac; }
+
+  .phase-1 .phase-dot { background: #3b82f6; }
+  .phase-1 .phase-icon { background: #1e3a8a; }
+  .phase-1 .phase-card { border-top: 3px solid #3b82f6; }
+  .phase-1 .phase-header-text h2 { color: #93c5fd; }
+
+  .phase-2 .phase-dot { background: #14b8a6; }
+  .phase-2 .phase-icon { background: #134e4a; }
+  .phase-2 .phase-card { border-top: 3px solid #14b8a6; }
+  .phase-2 .phase-header-text h2 { color: #99f6e4; }
+
+  .phase-3 .phase-dot { background: #f97316; }
+  .phase-3 .phase-icon { background: #7c2d12; }
+  .phase-3 .phase-card { border-top: 3px solid #f97316; }
+  .phase-3 .phase-header-text h2 { color: #fed7aa; }
+
+  .phase-4 .phase-dot { background: #a855f7; }
+  .phase-4 .phase-icon { background: #581c87; }
+  .phase-4 .phase-card { border-top: 3px solid #a855f7; }
+  .phase-4 .phase-header-text h2 { color: #e9d5ff; }
+
+  .phase-5 .phase-dot { background: #ec4899; }
+  .phase-5 .phase-icon { background: #831843; }
+  .phase-5 .phase-card { border-top: 3px solid #ec4899; }
+  .phase-5 .phase-header-text h2 { color: #fbcfe8; }
+
+  .phase-6 .phase-dot { background: #f59e0b; }
+  .phase-6 .phase-icon { background: #713f12; }
+  .phase-6 .phase-card { border-top: 3px solid #f59e0b; }
+  .phase-6 .phase-header-text h2 { color: #fde68a; }
+
+  .biz-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 40px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .biz-card {
+    background: #12121e;
+    border: 1px solid #2d2d4e;
+    border-radius: 16px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .biz-card:hover { border-color: #7c3aed44; }
+  .biz-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .biz-card p, .biz-card li { font-size: 12.5px; color: #94a3b8; line-height: 1.6; }
+  .biz-card ul { padding-left: 16px; }
+  .biz-card li { margin-bottom: 4px; }
+  .biz-tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-right: 4px; margin-bottom: 4px; }
+
+  .section-divider {
+    padding: 16px 48px 8px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-divider h2 { font-size: 18px; font-weight: 700; color: #7c3aed; border-bottom: 1px solid #2d2d4e; padding-bottom: 12px; }
+
+  @media (max-width: 768px) {
+    header { padding: 20px 20px; flex-direction: column; gap: 12px; }
+    .timeline-wrapper, .biz-row, .section-divider { padding-left: 20px; padding-right: 20px; }
+    .phase-row { grid-template-columns: 90px 1fr; }
+    .phase-name { font-size: 9.5px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>LearnForge — Roadmap</h1>
+    <p>Plan de développement · 7 phases · Business + Tech + Marketing</p>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> En cours</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Prochaine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#64748b"></div> Futures</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Clé</div>
+  </div>
+</header>
+
+<!-- TIMELINE TECH -->
+<div class="section-divider"><h2>Développement produit</h2></div>
+<div class="timeline-wrapper">
+
+  <!-- PHASE 0 -->
+  <div class="phase-row phase-0">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 0</div>
+      <div class="phase-time">1-2 mois</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">🔧</div>
+          <div class="phase-header-text">
+            <h2>Stabilisation de l'outil</h2>
+            <p>Corriger les bugs, poser les bases légales et techniques</p>
+          </div>
+          <div class="status-badge current">● En cours</div>
+        </div>
+        <div class="phase-body">
+          <div class="section-title">Corrections de bugs</div>
+          <div class="tasks-grid">
+            <div class="task todo"><div class="task-icon">🐛</div>Corriger le retry quiz (réponse reste en mémoire)</div>
+            <div class="task todo"><div class="task-icon">🐛</div>Synchroniser l'aperçu code en temps réel</div>
+            <div class="task todo"><div class="task-icon">🐛</div>Ajouter le champ "explication" aux slides Vrai/Faux</div>
+            <div class="task todo"><div class="task-icon">🐛</div>Rendre le nom du certificat modifiable (plus "Jean Dupont")</div>
+          </div>
+          <div class="section-title">Fondations</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Choisir et créer le statut juridique</div>
+            <div class="task key"><div class="task-icon">★</div>Ouvrir un compte bancaire professionnel</div>
+            <div class="task todo"><div class="task-icon">✓</div>Améliorer le site vitrine</div>
+            <div class="task todo"><div class="task-icon">✓</div>Rédiger CGU, CGV et Politique RGPD</div>
+            <div class="task todo"><div class="task-icon">✓</div>Choisir le nom de domaine définitif</div>
+            <div class="task key"><div class="task-icon">★</div>Choisir la stack backend (Supabase recommandé)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 1 -->
+  <div class="phase-row phase-1">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 1</div>
+      <div class="phase-time">2-4 mois</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">⚙️</div>
+          <div class="phase-header-text">
+            <h2>Backend & Authentification</h2>
+            <p>Transformer l'outil local en vraie plateforme en ligne</p>
+          </div>
+          <div class="status-badge next">→ Prochaine</div>
+        </div>
+        <div class="phase-body">
+          <div class="section-title">Infrastructure</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Mettre en place Supabase (BDD + Auth + Storage)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Déployer l'outil sur Vercel (production)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Configurer le nom de domaine + HTTPS</div>
+            <div class="task todo"><div class="task-icon">✓</div>Configurer les emails transactionnels (Resend)</div>
+          </div>
+          <div class="section-title">Authentification</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Inscription / connexion email + mot de passe</div>
+            <div class="task todo"><div class="task-icon">✓</div>Google OAuth (connexion Google)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Magic Link (connexion sans mot de passe)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Reset de mot de passe + vérification email</div>
+            <div class="task key"><div class="task-icon">★</div>Système de rôles : Formateur / Apprenant</div>
+          </div>
+          <div class="section-title">Données persistantes</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Sauvegarde des formations en base de données</div>
+            <div class="task todo"><div class="task-icon">✓</div>Sauvegarde automatique (plus besoin d'exporter JSON)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Interface de gestion de compte de base</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-row phase-2">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 2</div>
+      <div class="phase-time">2-3 mois</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">📊</div>
+          <div class="phase-header-text">
+            <h2>Tableau de Bord</h2>
+            <p>L'espace central pour formateurs et apprenants</p>
+          </div>
+          <div class="status-badge future">Planifiée</div>
+        </div>
+        <div class="phase-body">
+          <div class="section-title">Formateur</div>
+          <div class="tasks-grid">
+            <div class="task todo"><div class="task-icon">✓</div>Liste de mes formations (brouillon / publié / archivé)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Statistiques par formation (apprenants, taux, temps)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Profil public du formateur</div>
+            <div class="task todo"><div class="task-icon">✓</div>Actions rapides (dupliquer, archiver, supprimer)</div>
+          </div>
+          <div class="section-title">Apprenant</div>
+          <div class="tasks-grid">
+            <div class="task todo"><div class="task-icon">✓</div>Formations en cours (avec % progression)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Formations terminées + certificats téléchargeables</div>
+            <div class="task todo"><div class="task-icon">✓</div>Progression sauvegardée côté serveur</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase-row phase-3">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 3</div>
+      <div class="phase-time">3-4 mois</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">📚</div>
+          <div class="phase-header-text">
+            <h2>Bibliothèque & Paiements</h2>
+            <p>Catalogue public de formations + monétisation</p>
+          </div>
+          <div class="status-badge future">Planifiée</div>
+        </div>
+        <div class="phase-body">
+          <div class="section-title">Catalogue</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Catalogue public de formations</div>
+            <div class="task todo"><div class="task-icon">✓</div>Filtres (catégorie, prix, niveau, langue)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Moteur de recherche</div>
+            <div class="task todo"><div class="task-icon">✓</div>Fiches formation détaillées</div>
+            <div class="task todo"><div class="task-icon">✓</div>Système de notes et avis</div>
+          </div>
+          <div class="section-title">Monétisation</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Intégration Stripe (paiements par carte)</div>
+            <div class="task key"><div class="task-icon">★</div>Abonnements récurrents (Stripe Subscriptions)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Stripe Connect (paiement aux formateurs tiers)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Dashboard revenus formateur</div>
+            <div class="task todo"><div class="task-icon">✓</div>Gestion TVA automatique (Stripe Tax)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase-row phase-4">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 4</div>
+      <div class="phase-time">3-4 mois</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">🎓</div>
+          <div class="phase-header-text">
+            <h2>Classe Virtuelle</h2>
+            <p>Mode collaboratif formateur ↔ apprenants</p>
+          </div>
+          <div class="status-badge future">Planifiée</div>
+        </div>
+        <div class="phase-body">
+          <div class="section-title">Fonctionnalités formateur</div>
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Création et gestion de classes</div>
+            <div class="task todo"><div class="task-icon">✓</div>Invitation par lien ou code d'accès</div>
+            <div class="task key"><div class="task-icon">★</div>Tableau de suivi par apprenant (progression en temps réel)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Export résultats (CSV / PDF)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Stats agrégées (taux completion, quiz les plus ratés)</div>
+          </div>
+          <div class="section-title">Fonctionnalités apprenant</div>
+          <div class="tasks-grid">
+            <div class="task todo"><div class="task-icon">✓</div>Rejoindre une classe (code ou lien)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Voir les formations assignées par le formateur</div>
+            <div class="task todo"><div class="task-icon">✓</div>Notifications (nouvelle formation, délai)</div>
+          </div>
+          <div class="section-title">Avancé (Phase 4b)</div>
+          <div class="tasks-grid">
+            <div class="task todo"><div class="task-icon">✓</div>Mode live (diffusion temps réel — WebSockets)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Messagerie formateur ↔ apprenant</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase-row phase-5">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 5</div>
+      <div class="phase-time">2-3 mois</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">📤</div>
+          <div class="phase-header-text">
+            <h2>Exportateur HTML & SCORM</h2>
+            <p>Intégration dans des systèmes tiers (LMS, intranet)</p>
+          </div>
+          <div class="status-badge future">Planifiée</div>
+        </div>
+        <div class="phase-body">
+          <div class="tasks-grid">
+            <div class="task key"><div class="task-icon">★</div>Export HTML standalone (1 seul fichier, offline)</div>
+            <div class="task key"><div class="task-icon">★</div>Export SCORM 1.2 (compatibilité Moodle)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Export SCORM 2004</div>
+            <div class="task todo"><div class="task-icon">✓</div>Export ZIP avec assets séparés</div>
+            <div class="task todo"><div class="task-icon">✓</div>Personnalisation : logo + couleurs de l'entreprise cliente</div>
+            <div class="task todo"><div class="task-icon">✓</div>Documentation technique pour les développeurs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6 -->
+  <div class="phase-row phase-6">
+    <div class="phase-label">
+      <div class="phase-dot"></div>
+      <div class="phase-name">Phase 6</div>
+      <div class="phase-time">En continu</div>
+    </div>
+    <div class="phase-content">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-icon">🚀</div>
+          <div class="phase-header-text">
+            <h2>Growth & Scale</h2>
+            <p>Croissance, intégrations et internationalisation</p>
+          </div>
+          <div class="status-badge future">Long terme</div>
+        </div>
+        <div class="phase-body">
+          <div class="tasks-grid">
+            <div class="task todo"><div class="task-icon">✓</div>SEO + content marketing (blog)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Programme d'affiliation formateurs</div>
+            <div class="task todo"><div class="task-icon">✓</div>Application mobile (React Native)</div>
+            <div class="task todo"><div class="task-icon">✓</div>API publique pour les développeurs</div>
+            <div class="task todo"><div class="task-icon">✓</div>Intégrations Zapier, HubSpot, Slack</div>
+            <div class="task todo"><div class="task-icon">✓</div>Support multilingue (EN, ES, DE)</div>
+            <div class="task todo"><div class="task-icon">✓</div>Conformité Qualiopi (marché formation pro)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BUSINESS SECTION -->
+<div class="section-divider"><h2>Business, administratif & marketing</h2></div>
+
+<div class="biz-row">
+
+  <div class="biz-card">
+    <h3><span>⚖️</span> Statut juridique</h3>
+    <p style="margin-bottom:10px;">Deux options principales :</p>
+    <ul>
+      <li><strong>Micro-entreprise</strong> — Rapide à créer, 0 charge si 0 CA. Plafond 77 700€/an. Recommandé pour débuter.</li>
+      <li style="margin-top:8px;"><strong>SASU</strong> — Plus de flexibilité fiscale, impôt société (15-25%). Pour viser 30k€+ dès la première année.</li>
+    </ul>
+    <div style="margin-top:12px;">
+      <span class="biz-tag" style="background:#14532d44;color:#86efac;border:1px solid #22c55e44">Guichet INPI</span>
+      <span class="biz-tag" style="background:#1e3a8a44;color:#93c5fd;border:1px solid #3b82f644">Legalstart</span>
+      <span class="biz-tag" style="background:#581c8744;color:#e9d5ff;border:1px solid #a855f744">Indy</span>
+    </div>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>💳</span> Finances & Comptabilité</h3>
+    <ul>
+      <li>Compte bancaire pro : <strong>Qonto</strong> ou <strong>Shine</strong></li>
+      <li>Comptabilité : outil <strong>Indy</strong> (fait pour indépendants FR)</li>
+      <li>Coût hébergement démarrage : ~80-300€/mois</li>
+      <li>Stripe : 1.4% + 0.25€ par transaction</li>
+      <li>Expert-comptable si SASU (~1200-3000€/an)</li>
+    </ul>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>📜</span> Documents légaux</h3>
+    <ul>
+      <li>CGU (Conditions Générales d'Utilisation)</li>
+      <li>CGV (Conditions Générales de Vente)</li>
+      <li>Politique de confidentialité (RGPD)</li>
+      <li>Mentions légales sur le site</li>
+      <li>Contrat formateur (si formateurs tiers)</li>
+      <li>Bannière cookies conforme CNIL</li>
+    </ul>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>🔍</span> SEO & Contenu</h3>
+    <ul>
+      <li>Blog : "comment créer une formation en ligne"</li>
+      <li>Comparatifs : Teachable vs LearnForge</li>
+      <li>Tutoriels YouTube sur l'outil</li>
+      <li>Pages par catégorie de formation</li>
+      <li>Schema.org pour les formations (rich snippets)</li>
+    </ul>
+    <div style="margin-top:10px; font-size:11.5px; color:#64748b;">Délai SEO : 3-6 mois avant résultats</div>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>📣</span> Acquisition & Ventes</h3>
+    <ul>
+      <li><strong>LinkedIn</strong> — Contenu + outreach formateurs (priorité haute)</li>
+      <li><strong>Partenariats</strong> — Formateurs influents (commissions)</li>
+      <li><strong>ProductHunt</strong> — Au lancement de la v1</li>
+      <li><strong>Google Ads</strong> — Quand le budget le permet</li>
+      <li>Cold email B2B (entreprises avec formation interne)</li>
+    </ul>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>💰</span> Pricing Freemium</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+      <div style="padding:8px 12px;background:#1a1a2e;border-radius:8px;border:1px solid #2d2d4e;">
+        <div style="color:#e2e8f0;font-weight:700;font-size:13px;">Gratuit</div>
+        <div style="color:#64748b;font-size:11.5px;">2 formations · 20 apprenants · pas de paiements</div>
+      </div>
+      <div style="padding:8px 12px;background:#1e3a8a22;border-radius:8px;border:1px solid #3b82f644;">
+        <div style="color:#93c5fd;font-weight:700;font-size:13px;">Pro — ~29€/mois</div>
+        <div style="color:#64748b;font-size:11.5px;">Illimité · 200 apprenants · domaine perso</div>
+      </div>
+      <div style="padding:8px 12px;background:#58188722;border-radius:8px;border:1px solid #a855f744;">
+        <div style="color:#e9d5ff;font-weight:700;font-size:13px;">Business — ~79€/mois</div>
+        <div style="color:#64748b;font-size:11.5px;">Apprenants illimités · Classes · Analytics · SCORM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>🏠</span> Hébergement recommandé</h3>
+    <ul>
+      <li><strong>Frontend :</strong> Vercel (gratuit, CDN mondial)</li>
+      <li><strong>Backend / BDD :</strong> Supabase (PostgreSQL managed)</li>
+      <li><strong>Médias :</strong> Cloudflare R2 (moins cher qu'AWS S3)</li>
+      <li><strong>Emails :</strong> Resend ou Brevo (français)</li>
+      <li><strong>Domaine :</strong> OVH (français, fiable)</li>
+    </ul>
+  </div>
+
+  <div class="biz-card">
+    <h3><span>⚡</span> Actions immédiates</h3>
+    <ol style="padding-left:16px;">
+      <li style="margin-bottom:6px;color:#e2e8f0;font-size:13px;">Corriger les 4 bugs connus</li>
+      <li style="margin-bottom:6px;color:#e2e8f0;font-size:13px;">Choisir le statut juridique</li>
+      <li style="margin-bottom:6px;color:#e2e8f0;font-size:13px;">Mettre en place Supabase</li>
+      <li style="margin-bottom:6px;color:#e2e8f0;font-size:13px;">Lancer une beta (5-10 formateurs)</li>
+      <li style="color:#64748b;font-size:12px;">Première version en ligne avec auth</li>
+    </ol>
+  </div>
+
+</div>
+
+</body>
+</html>

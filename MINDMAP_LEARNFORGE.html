@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnForge — Mindmap</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d0d1a; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
+
+  #canvas { position: relative; width: 100vw; height: 100vh; cursor: grab; user-select: none; }
+  #canvas:active { cursor: grabbing; }
+  #svg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  .node {
+    position: absolute;
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    border: 2px solid transparent;
+  }
+  .node:hover { transform: translate(-50%, -50%) scale(1.08); z-index: 100; }
+
+  .node-center {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+    padding: 20px 36px;
+    border-radius: 20px;
+    box-shadow: 0 0 60px #7c3aed88;
+    z-index: 10;
+  }
+
+  .node-l1 { font-size: 14px; font-weight: 700; padding: 12px 20px; border-radius: 16px; z-index: 9; }
+  .node-l1.blue { background: #1e3a8a; color: #93c5fd; border-color: #3b82f6; box-shadow: 0 0 20px #3b82f644; }
+  .node-l1.green { background: #14532d; color: #86efac; border-color: #22c55e; box-shadow: 0 0 20px #22c55e44; }
+  .node-l1.orange { background: #7c2d12; color: #fed7aa; border-color: #f97316; box-shadow: 0 0 20px #f9731644; }
+  .node-l1.pink { background: #831843; color: #fbcfe8; border-color: #ec4899; box-shadow: 0 0 20px #ec489944; }
+  .node-l1.yellow { background: #713f12; color: #fde68a; border-color: #f59e0b; box-shadow: 0 0 20px #f59e0b44; }
+  .node-l1.red { background: #7f1d1d; color: #fca5a5; border-color: #ef4444; box-shadow: 0 0 20px #ef444444; }
+  .node-l1.teal { background: #134e4a; color: #99f6e4; border-color: #14b8a6; box-shadow: 0 0 20px #14b8a644; }
+  .node-l1.indigo { background: #312e81; color: #c7d2fe; border-color: #6366f1; box-shadow: 0 0 20px #6366f144; }
+
+  .node-l2 {
+    background: #1a1a2e;
+    color: #e2e8f0;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 7px 13px;
+    border-radius: 10px;
+    border: 1px solid #2d2d4e;
+    max-width: 180px;
+    white-space: normal;
+    line-height: 1.4;
+    z-index: 8;
+  }
+  .node-l2:hover { background: #22223a; border-color: #7c3aed; }
+
+  #info-panel {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    border: 1px solid #2d2d4e;
+    color: #94a3b8;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  #title-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, #0d0d1a 0%, transparent 100%);
+    padding: 20px 30px;
+    z-index: 999;
+    pointer-events: none;
+  }
+  #title-bar h1 { color: #7c3aed; font-size: 22px; font-weight: 800; }
+  #title-bar p { color: #475569; font-size: 13px; margin-top: 2px; }
+
+  svg line { stroke-opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<div id="title-bar">
+  <h1>LearnForge — Mindmap Stratégique</h1>
+  <p>Vue d'ensemble complète du projet · Glisser pour naviguer · Scroll pour zoomer</p>
+</div>
+
+<div id="canvas">
+  <svg id="svg-layer"></svg>
+</div>
+
+<div id="info-panel">Glisser pour naviguer · Scroll pour zoomer · Clic sur un nœud pour les détails</div>
+
+<script>
+const NODES = [
+  // CENTER
+  { id: 'center', label: 'LEARNFORGE', type: 'center', x: 0, y: 0 },
+
+  // LEVEL 1 — Grands thèmes
+  { id: 'outil', label: '🛠 Outil\n(CourseBuilder)', type: 'l1 blue', x: -520, y: -220, parent: 'center' },
+  { id: 'classe', label: '🎓 Classe\nVirtuelle', type: 'l1 green', x: -280, y: -420, parent: 'center' },
+  { id: 'biblio', label: '📚 Bibliothèque\nde Formations', type: 'l1 orange', x: 80, y: -450, parent: 'center' },
+  { id: 'export', label: '📤 Exportateur\nHTML / SCORM', type: 'l1 pink', x: 440, y: -300, parent: 'center' },
+  { id: 'dash', label: '📊 Tableau\nde Bord', type: 'l1 teal', x: 530, y: 60, parent: 'center' },
+  { id: 'backend', label: '⚙️ Backend &\nInfra Tech', type: 'l1 indigo', x: 350, y: 350, parent: 'center' },
+  { id: 'business', label: '💼 Business &\nAdministratif', type: 'l1 yellow', x: -60, y: 460, parent: 'center' },
+  { id: 'marketing', label: '📣 Marketing\n& Ventes', type: 'l1 red', x: -420, y: 320, parent: 'center' },
+
+  // OUTIL children
+  { id: 'outil-slides', label: '10 types de slides\n(texte, quiz, flip, code...)', type: 'l2', x: -760, y: -320, parent: 'outil' },
+  { id: 'outil-prev', label: 'Mode Preview\nApprenant interactif', type: 'l2', x: -800, y: -200, parent: 'outil' },
+  { id: 'outil-json', label: 'Export JSON\n(seule sauvegarde actuelle)', type: 'l2', x: -780, y: -90, parent: 'outil' },
+  { id: 'outil-bugs', label: '4 bugs à corriger\n(retry, code, certif...)', type: 'l2', x: -640, y: -50, parent: 'outil' },
+  { id: 'outil-prog', label: 'Progression 40/30/30\n(scroll/flip/quiz)', type: 'l2', x: -700, y: -430, parent: 'outil' },
+
+  // CLASSE children
+  { id: 'classe-inv', label: 'Inviter apprenants\n(lien / code)', type: 'l2', x: -460, y: -540, parent: 'classe' },
+  { id: 'classe-suivi', label: 'Suivi progression\npar apprenant', type: 'l2', x: -280, y: -590, parent: 'classe' },
+  { id: 'classe-live', label: 'Mode Live\n(temps réel)', type: 'l2', x: -100, y: -570, parent: 'classe' },
+  { id: 'classe-csv', label: 'Export résultats\nCSV / PDF', type: 'l2', x: -480, y: -440, parent: 'classe' },
+  { id: 'classe-stats', label: 'Stats agrégées\n(taux completion, quiz...)', type: 'l2', x: -100, y: -480, parent: 'classe' },
+
+  // BIBLIOTHÈQUE children
+  { id: 'biblio-cat', label: 'Catégories & filtres\n(niveau, prix, langue)', type: 'l2', x: 40, y: -600, parent: 'biblio' },
+  { id: 'biblio-pub', label: 'Publication par\nle formateur', type: 'l2', x: 200, y: -580, parent: 'biblio' },
+  { id: 'biblio-pay', label: 'Gratuit / Payant\n/ Abonnement', type: 'l2', x: 340, y: -530, parent: 'biblio' },
+  { id: 'biblio-avis', label: 'Notes & avis\napprenants', type: 'l2', x: 160, y: -480, parent: 'biblio' },
+  { id: 'biblio-search', label: 'Moteur de recherche\nfull-text', type: 'l2', x: -40, y: -490, parent: 'biblio' },
+
+  // EXPORT children
+  { id: 'export-html', label: 'HTML standalone\nauto-contenu + offline', type: 'l2', x: 560, y: -430, parent: 'export' },
+  { id: 'export-scorm', label: 'SCORM 1.2 / 2004\ncompatible Moodle', type: 'l2', x: 680, y: -310, parent: 'export' },
+  { id: 'export-zip', label: 'ZIP avec assets\npour hébergement', type: 'l2', x: 680, y: -200, parent: 'export' },
+  { id: 'export-logo', label: 'Personnalisation\nlogo + couleurs', type: 'l2', x: 570, y: -160, parent: 'export' },
+
+  // DASHBOARD children
+  { id: 'dash-form', label: 'Dashboard Formateur\n(formations, stats, revenus)', type: 'l2', x: 700, y: -50, parent: 'dash' },
+  { id: 'dash-appr', label: 'Dashboard Apprenant\n(formations, certificats)', type: 'l2', x: 700, y: 100, parent: 'dash' },
+  { id: 'dash-rev', label: 'Suivi revenus\n+ retrait (virement)', type: 'l2', x: 680, y: 220, parent: 'dash' },
+  { id: 'dash-prof', label: 'Profil public\ndu formateur', type: 'l2', x: 540, y: 250, parent: 'dash' },
+
+  // BACKEND children
+  { id: 'back-db', label: 'PostgreSQL\n+ Supabase', type: 'l2', x: 540, y: 450, parent: 'backend' },
+  { id: 'back-auth', label: 'Auth (email + Google\n+ Magic Link)', type: 'l2', x: 400, y: 510, parent: 'backend' },
+  { id: 'back-stripe', label: 'Stripe\n(paiements + abonnements)', type: 'l2', x: 250, y: 530, parent: 'backend' },
+  { id: 'back-cdn', label: 'CDN médias\nCloudflare R2', type: 'l2', x: 580, y: 340, parent: 'backend' },
+  { id: 'back-host', label: 'Hébergement\nVercel + Railway', type: 'l2', x: 400, y: 380, parent: 'backend' },
+  { id: 'back-email', label: 'Emails\nResend / Brevo', type: 'l2', x: 240, y: 440, parent: 'backend' },
+
+  // BUSINESS children
+  { id: 'biz-statut', label: 'Statut juridique\n(Micro-ent / SASU)', type: 'l2', x: -100, y: 570, parent: 'business' },
+  { id: 'biz-compta', label: 'Comptabilité\nIndy + expert-comptable', type: 'l2', x: 60, y: 590, parent: 'business' },
+  { id: 'biz-legal', label: 'CGU / CGV / RGPD\n+ mentions légales', type: 'l2', x: -240, y: 590, parent: 'business' },
+  { id: 'biz-bank', label: 'Compte bancaire pro\n(Qonto / Shine)', type: 'l2', x: -60, y: 490, parent: 'business' },
+
+  // MARKETING children
+  { id: 'mkt-seo', label: 'SEO & Blog\n(contenu long terme)', type: 'l2', x: -630, y: 420, parent: 'marketing' },
+  { id: 'mkt-linkedin', label: 'LinkedIn\n(contenu + outreach)', type: 'l2', x: -680, y: 290, parent: 'marketing' },
+  { id: 'mkt-yt', label: 'YouTube\n(tutoriels)', type: 'l2', x: -620, y: 200, parent: 'marketing' },
+  { id: 'mkt-freem', label: 'Freemium\n(0 / 29€ / 79€)', type: 'l2', x: -560, y: 450, parent: 'marketing' },
+  { id: 'mkt-part', label: 'Partenariats\nformateurs influents', type: 'l2', x: -440, y: 480, parent: 'marketing' },
+  { id: 'mkt-ads', label: 'Google Ads\n(acquisition payante)', type: 'l2', x: -660, y: 500, parent: 'marketing' },
+];
+
+let scale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let isDragging = false;
+let dragStartX, dragStartY, startOffsetX, startOffsetY;
+
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg-layer');
+
+function getPos(node) {
+  return {
+    x: node.x * scale + offsetX + window.innerWidth / 2,
+    y: node.y * scale + offsetY + window.innerHeight / 2,
+  };
+}
+
+function getNodeEl(id) {
+  return document.getElementById('node-' + id);
+}
+
+function renderNodes() {
+  NODES.forEach(n => {
+    let el = getNodeEl(n.id);
+    if (!el) return;
+    const pos = getPos(n);
+    el.style.left = pos.x + 'px';
+    el.style.top = pos.y + 'px';
+    el.style.fontSize = (n.type.includes('center') ? 20 : n.type.includes('l1') ? 14 : 12) * Math.min(scale, 1.5) + 'px';
+  });
+  renderLines();
+}
+
+function renderLines() {
+  svg.innerHTML = '';
+  const colors = {
+    'outil': '#3b82f6',
+    'classe': '#22c55e',
+    'biblio': '#f97316',
+    'export': '#ec4899',
+    'dash': '#14b8a6',
+    'backend': '#6366f1',
+    'business': '#f59e0b',
+    'marketing': '#ef4444',
+  };
+
+  NODES.forEach(n => {
+    if (!n.parent) return;
+    const parent = NODES.find(p => p.id === n.parent);
+    if (!parent) return;
+
+    const p1 = getPos(parent);
+    const p2 = getPos(n);
+
+    let color = '#7c3aed';
+    const rootId = n.parent === 'center' ? n.id : n.id.split('-')[0];
+    if (colors[rootId]) color = colors[rootId];
+    if (colors[n.parent]) color = colors[n.parent];
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', p1.x);
+    line.setAttribute('y1', p1.y);
+    line.setAttribute('x2', p2.x);
+    line.setAttribute('y2', p2.y);
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', n.parent === 'center' ? 3 * scale : 1.5 * scale);
+    line.setAttribute('stroke-opacity', n.parent === 'center' ? '0.6' : '0.35');
+    svg.appendChild(line);
+  });
+}
+
+function createNodes() {
+  NODES.forEach(n => {
+    const el = document.createElement('div');
+    el.id = 'node-' + n.id;
+    el.className = 'node node-' + n.type.split(' ').join(' node-');
+    el.textContent = n.label;
+    canvas.appendChild(el);
+  });
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (e.target !== canvas && !e.target.matches('#svg-layer, svg')) {
+    // clicking on a node - let it pass
+  }
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  startOffsetX = offsetX;
+  startOffsetY = offsetY;
+});
+
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  offsetX = startOffsetX + (e.clientX - dragStartX);
+  offsetY = startOffsetY + (e.clientY - dragStartY);
+  renderNodes();
+});
+
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+  const mouseX = e.clientX - window.innerWidth / 2;
+  const mouseY = e.clientY - window.innerHeight / 2;
+  offsetX = (offsetX - mouseX) * zoomFactor + mouseX;
+  offsetY = (offsetY - mouseY) * zoomFactor + mouseY;
+  scale = Math.min(Math.max(scale * zoomFactor, 0.3), 2.5);
+  renderNodes();
+}, { passive: false });
+
+// Touch support
+let lastTouchDist = null;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    dragStartX = e.touches[0].clientX;
+    dragStartY = e.touches[0].clientY;
+    startOffsetX = offsetX;
+    startOffsetY = offsetY;
+  }
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && isDragging) {
+    offsetX = startOffsetX + (e.touches[0].clientX - dragStartX);
+    offsetY = startOffsetY + (e.touches[0].clientY - dragStartY);
+    renderNodes();
+  } else if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (lastTouchDist) {
+      const zf = dist / lastTouchDist;
+      scale = Math.min(Math.max(scale * zf, 0.3), 2.5);
+      renderNodes();
+    }
+    lastTouchDist = dist;
+  }
+}, { passive: false });
+canvas.addEventListener('touchend', () => { isDragging = false; lastTouchDist = null; });
+
+createNodes();
+renderNodes();
+window.addEventListener('resize', renderNodes);
+</script>
+</body>
+</html>

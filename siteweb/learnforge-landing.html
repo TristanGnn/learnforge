@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LearnForge — Créez des formations qui marquent</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,300&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #06060f;
+  --surface:   #0c0c18;
+  --surface2:  #10101e;
+  --border:    #16162a;
+  --border2:   #1e1e36;
+  --purple:    #7c3aed;
+  --purple-l:  #a78bfa;
+  --purple-xl: #c4b5fd;
+  --blue:      #3b82f6;
+  --text:      #e2e8f0;
+  --muted:     #64748b;
+  --muted2:    #94a3b8;
+  --green:     #22c55e;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ─── GRID CANVAS ─── */
+#grid-canvas {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 60px; height: 64px;
+  background: rgba(6,6,15,0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-icon {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-name {
+  font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px;
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 2px;
+}
+.nav-link {
+  font-size: 14px; font-weight: 500; color: var(--muted);
+  padding: 6px 16px; border-radius: 8px;
+  text-decoration: none; transition: color 0.15s;
+  cursor: pointer;
+}
+.nav-link:hover { color: var(--muted2); }
+
+.nav-cta {
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-nav {
+  font-size: 13px; font-weight: 600; padding: 8px 18px;
+  border-radius: 9px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  border: none; transition: all 0.15s;
+}
+.btn-nav-ghost {
+  background: transparent; color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.btn-nav-ghost:hover { border-color: #3a3a5e; color: var(--text); }
+.btn-nav-solid {
+  background: var(--purple); color: #fff;
+}
+.btn-nav-solid:hover { opacity: 0.88; }
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+  padding: 120px 40px 80px;
+  position: relative;
+}
+
+/* Glow orbs */
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  top: -100px; left: 50%; transform: translateX(-50%);
+  background: radial-gradient(ellipse, #7c3aed18 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--purple-l);
+  background: #7c3aed14; border: 1px solid #7c3aed30;
+  padding: 6px 16px; border-radius: 99px;
+  margin-bottom: 32px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--purple-l);
+  animation: pulse 2s infinite;
+}
+
+.hero-h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(52px, 6vw, 86px);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  color: var(--text);
+  max-width: 800px;
+  margin-bottom: 8px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero-h1 em {
+  font-style: italic;
+  background: linear-gradient(135deg, #a78bfa, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 18px; font-weight: 400; color: var(--muted2);
+  max-width: 520px; line-height: 1.65;
+  margin-bottom: 44px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 12px;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--purple); color: #fff;
+  font-size: 15px; font-weight: 600; padding: 14px 28px;
+  border-radius: 11px; border: none; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  box-shadow: 0 0 40px #7c3aed40;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 0 60px #7c3aed55; }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: transparent; color: var(--muted2);
+  font-size: 15px; font-weight: 500; padding: 13px 24px;
+  border-radius: 11px; border: 1px solid var(--border2); cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: #3a3a5e; color: var(--text); }
+
+/* ─── HERO MOCKUP ─── */
+.hero-mockup {
+  width: 100%; max-width: 960px; margin: 72px auto 0;
+  position: relative;
+  animation: fadeUp 0.7s 0.4s ease both;
+}
+
+.mockup-glow {
+  position: absolute; inset: -40px;
+  background: radial-gradient(ellipse at 50% 50%, #7c3aed18, transparent 70%);
+  pointer-events: none;
+}
+
+.mockup-frame {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 0 1px #ffffff06;
+  position: relative;
+}
+
+.mockup-topbar {
+  height: 48px; background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 8px;
+}
+.mockup-dot { width: 11px; height: 11px; border-radius: 50%; }
+
+.mockup-body {
+  display: flex; height: 420px;
+}
+
+.mockup-sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--surface2);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.mockup-module {
+  padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  color: var(--purple-l); background: #7c3aed14;
+  margin-bottom: 4px;
+}
+.mockup-slide-item {
+  padding: 6px 12px; border-radius: 6px; font-size: 11px; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.mockup-slide-item.active { background: #7c3aed10; color: var(--muted2); }
+.slide-type-pill {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 4px;
+  background: var(--border2); color: var(--muted);
+  flex-shrink: 0;
+}
+.slide-type-pill.quiz { background: #7c3aed22; color: var(--purple-l); }
+.slide-type-pill.code { background: #3b82f622; color: #60a5fa; }
+.slide-type-pill.flip { background: #22c55e18; color: #4ade80; }
+
+.mockup-editor {
+  width: 340px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.mockup-field {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.mockup-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted);
+}
+.mockup-input {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 9px 12px;
+  font-size: 12px; color: var(--muted2);
+  font-family: 'DM Sans', sans-serif;
+}
+.mockup-input.tall { height: 64px; display: flex; align-items: flex-start; padding-top: 9px; }
+.mockup-options {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.mockup-option {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 12px;
+  font-size: 11px; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.mockup-option.correct { border-color: #22c55e44; color: #4ade80; }
+.mockup-radio {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--border2); flex-shrink: 0;
+}
+.mockup-radio.checked { border-color: #22c55e; background: #22c55e; }
+
+.mockup-preview {
+  flex: 1;
+  padding: 24px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #08081200;
+  position: relative;
+}
+.preview-card {
+  width: 100%; max-width: 320px;
+  background: #12121e;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 0 40px #7c3aed1a, 0 0 0 1px #7c3aed18;
+}
+.preview-card-title {
+  font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px;
+}
+.preview-question {
+  font-size: 13px; color: var(--muted2); margin-bottom: 16px; line-height: 1.5;
+}
+.preview-choices {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.preview-choice {
+  padding: 9px 14px; border-radius: 9px;
+  border: 1px solid var(--border2);
+  font-size: 12px; color: var(--muted2);
+  cursor: pointer;
+}
+.preview-choice.selected {
+  border-color: #7c3aed60; background: #7c3aed14; color: var(--purple-xl);
+}
+.preview-choice.correct {
+  border-color: #22c55e50; background: #22c55e14; color: #4ade80;
+}
+
+/* ─── DIVIDER ─── */
+.divider {
+  width: 1px; background: linear-gradient(to bottom, transparent, var(--border2), transparent);
+  height: 80px; margin: 0 auto;
+}
+
+/* ─── STATS BAND ─── */
+.stats-band {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 60px;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  overflow: hidden;
+  position: relative;
+}
+.stats-band::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, transparent 15%, transparent 85%, var(--bg) 100%);
+  z-index: 1; pointer-events: none;
+}
+.stat-item {
+  flex: 1; text-align: center; padding: 0 40px;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 48px; font-weight: 400; letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--purple-xl), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-desc {
+  font-size: 13px; color: var(--muted); font-weight: 500;
+}
+
+/* ─── SECTION ─── */
+section {
+  padding: 100px 60px;
+  max-width: 1140px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+
+.section-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--purple-l); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-eyebrow::before {
+  content: ''; display: block;
+  width: 24px; height: 1px; background: var(--purple-l);
+}
+
+.section-h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(36px, 4vw, 54px);
+  font-weight: 400; letter-spacing: -0.5px;
+  line-height: 1.1; color: var(--text);
+  margin-bottom: 16px;
+}
+.section-h2 em {
+  font-style: italic; color: var(--purple-xl);
+}
+
+.section-p {
+  font-size: 16px; color: var(--muted2); line-height: 1.7;
+  max-width: 520px;
+}
+
+/* ─── SLIDES GRID ─── */
+.slides-section {
+  padding: 100px 60px;
+  position: relative; z-index: 1;
+}
+
+.slides-intro {
+  max-width: 1140px; margin: 0 auto 60px;
+}
+
+.slides-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  max-width: 1140px; margin: 0 auto;
+}
+
+.slide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 18px;
+  transition: all 0.25s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.slide-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  opacity: 0; transition: opacity 0.25s;
+}
+.slide-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+.slide-card:hover::before { opacity: 1; }
+
+.slide-card.c-purple::before { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+.slide-card.c-blue::before   { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+.slide-card.c-green::before  { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.slide-card.c-amber::before  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.slide-card.c-rose::before   { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+.slide-card.c-cyan::before   { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
+.slide-card.c-violet::before { background: linear-gradient(90deg, #8b5cf6, #c4b5fd); }
+.slide-card.c-orange::before { background: linear-gradient(90deg, #f97316, #fb923c); }
+.slide-card.c-teal::before   { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
+.slide-card.c-pink::before   { background: linear-gradient(90deg, #ec4899, #f472b6); }
+
+.slide-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px;
+}
+.slide-card.c-purple .slide-icon { background: #7c3aed18; color: #a78bfa; }
+.slide-card.c-blue   .slide-icon { background: #3b82f618; color: #60a5fa; }
+.slide-card.c-green  .slide-icon { background: #22c55e18; color: #4ade80; }
+.slide-card.c-amber  .slide-icon { background: #f59e0b18; color: #fbbf24; }
+.slide-card.c-rose   .slide-icon { background: #f43f5e18; color: #fb7185; }
+.slide-card.c-cyan   .slide-icon { background: #06b6d418; color: #22d3ee; }
+.slide-card.c-violet .slide-icon { background: #8b5cf618; color: #c4b5fd; }
+.slide-card.c-orange .slide-icon { background: #f9731618; color: #fb923c; }
+.slide-card.c-teal   .slide-icon { background: #14b8a618; color: #2dd4bf; }
+.slide-card.c-pink   .slide-icon { background: #ec489918; color: #f472b6; }
+
+.slide-name {
+  font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 5px;
+}
+.slide-desc {
+  font-size: 11.5px; color: var(--muted); line-height: 1.5;
+}
+
+/* ─── FEATURES ─── */
+.features-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 48px 80px; margin-top: 60px;
+}
+.feature-item {}
+.feature-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: #7c3aed14; border: 1px solid #7c3aed30;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--purple-l); margin-bottom: 16px;
+}
+.feature-title {
+  font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.2px;
+}
+.feature-desc {
+  font-size: 14px; color: var(--muted); line-height: 1.65;
+}
+
+/* ─── FLOW ─── */
+.flow-section {
+  padding: 100px 60px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.flow-inner { max-width: 1140px; margin: 0 auto; }
+.flow-steps {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin-top: 60px; position: relative;
+}
+.flow-steps::before {
+  content: '';
+  position: absolute; top: 28px; left: calc(16.66% + 20px); right: calc(16.66% + 20px);
+  height: 1px;
+  background: linear-gradient(90deg, var(--purple), var(--blue));
+  z-index: 0;
+}
+.flow-step {
+  text-align: center; padding: 0 32px; position: relative; z-index: 1;
+}
+.flow-step-num {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px; color: #fff;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 30px #7c3aed40;
+}
+.flow-step-title {
+  font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px;
+}
+.flow-step-desc {
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+}
+
+/* ─── CTA BOTTOM ─── */
+.cta-section {
+  padding: 120px 60px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; width: 600px; height: 600px;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse, #7c3aed14 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(40px, 5vw, 68px);
+  font-weight: 400; letter-spacing: -1px;
+  line-height: 1.08; color: var(--text);
+  max-width: 680px; margin: 0 auto 20px;
+}
+.cta-h2 em { font-style: italic; color: var(--purple-xl); }
+.cta-sub {
+  font-size: 16px; color: var(--muted2); max-width: 440px; margin: 0 auto 40px; line-height: 1.6;
+}
+.cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.footer-logo-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+}
+.footer-name { font-size: 14px; font-weight: 700; color: var(--muted2); }
+.footer-right { font-size: 13px; color: var(--muted); }
+
+/* ─── DASHBOARD SECTION ─── */
+.dash-section {
+  padding: 100px 60px;
+  position: relative; z-index: 1;
+}
+.dash-inner { max-width: 1140px; margin: 0 auto; }
+
+.dash-layout {
+  display: grid; grid-template-columns: 220px 1fr;
+  gap: 0; margin-top: 60px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+}
+
+.dash-aside {
+  background: var(--surface2);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  display: flex; flex-direction: column;
+}
+.dash-logo-row {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 9px;
+}
+.dash-logo-ico {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+}
+.dash-logo-txt { font-size: 14px; font-weight: 700; color: var(--text); }
+.dash-nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 12px; margin: 0 8px;
+  border-radius: 8px; font-size: 12.5px; font-weight: 500;
+  color: var(--muted); cursor: default;
+}
+.dash-nav-item.active { background: #7c3aed18; color: var(--purple-l); }
+.dash-nav-item svg { flex-shrink: 0; }
+
+.dash-footer-user {
+  margin-top: auto; padding: 14px 20px 0;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 9px;
+}
+.dash-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed44, #3b82f644);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--purple-l);
+  flex-shrink: 0;
+}
+.dash-user-name { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.dash-user-role { font-size: 11px; color: var(--muted); }
+
+.dash-main { overflow: hidden; }
+
+.dash-topbar {
+  height: 48px; border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg);
+}
+.dash-breadcrumb { font-size: 12px; color: var(--muted); }
+.dash-breadcrumb span { color: var(--text); font-weight: 600; }
+.dash-search {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 5px 12px;
+  font-size: 12px; color: var(--muted);
+}
+
+.dash-content { padding: 24px; }
+
+.dash-hero-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.dash-hero-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; margin-bottom: 4px; }
+.dash-hero-sub { font-size: 13px; color: var(--muted2); }
+.dash-hero-btns { display: flex; gap: 8px; }
+.dash-btn-pri {
+  font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 8px;
+  background: var(--purple); color: #fff; border: none; cursor: default;
+  font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+}
+.dash-btn-sec {
+  font-size: 12px; font-weight: 500; padding: 8px 16px; border-radius: 8px;
+  background: var(--surface2); color: var(--muted2); border: 1px solid var(--border2); cursor: default;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+.dash-stat {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px; position: relative; overflow: hidden;
+}
+.dash-stat::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--blue));
+}
+.dash-stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; }
+.dash-stat-val { font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.8px; line-height: 1; }
+.dash-stat-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.dash-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; cursor: default;
+}
+.dash-card-thumb {
+  height: 72px; display: flex; align-items: center; justify-content: center;
+}
+.dash-card-body { padding: 12px; }
+.dash-card-tag {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+  display: inline-block; margin-bottom: 6px; letter-spacing: 0.2px;
+}
+.dash-card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.dash-card-meta { display: flex; align-items: center; justify-content: space-between; }
+.dash-card-stats { display: flex; gap: 10px; font-size: 10.5px; color: var(--muted); }
+.dash-card-status { font-size: 10px; font-weight: 700; }
+.dash-prog { height: 2px; background: var(--border); border-radius: 2px; margin-top: 8px; }
+.dash-prog-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); }
+
+.dash-activity-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.dash-activity-list { display: flex; flex-direction: column; gap: 0; }
+.dash-activity-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+}
+.dash-activity-item:last-child { border-bottom: none; }
+.dash-activity-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dash-activity-text { flex: 1; color: var(--muted2); }
+.dash-activity-text strong { color: var(--text); }
+.dash-activity-time { font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+
+/* ─── LEARNER SECTION ─── */
+.learner-section {
+  padding: 100px 60px;
+  position: relative; z-index: 1;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.learner-inner {
+  max-width: 1140px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 480px; gap: 80px; align-items: center;
+}
+.learner-text {}
+.learner-mockup {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 18px; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+.lm-header {
+  height: 48px; background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.lm-course-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.lm-mode-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 99px;
+  background: #7c3aed22; color: var(--purple-l); border: 1px solid #7c3aed40;
+}
+.lm-progress-bar {
+  height: 3px; background: var(--border);
+}
+.lm-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--purple), var(--blue));
+  transition: width 0.3s;
+}
+.lm-body { padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+
+.lm-slide {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+}
+.lm-slide.active {
+  border-color: #7c3aed44;
+  box-shadow: 0 0 24px #7c3aed18;
+}
+.lm-slide-type {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+.lm-slide-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.lm-slide-content { font-size: 12.5px; color: var(--muted2); line-height: 1.6; }
+
+.lm-quiz-opts { display: flex; flex-direction: column; gap: 7px; margin-top: 12px; }
+.lm-quiz-opt {
+  padding: 8px 12px; border-radius: 8px;
+  font-size: 12px; color: var(--muted2);
+  border: 1px solid var(--border2);
+}
+.lm-quiz-opt.correct { border-color: #22c55e50; background: #22c55e10; color: #4ade80; }
+.lm-quiz-opt.wrong   { border-color: #ef444450; background: #ef444410; color: #f87171; }
+.lm-quiz-opt.sel     { border-color: #7c3aed50; background: #7c3aed10; color: var(--purple-xl); }
+
+.lm-flip {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;
+}
+.lm-flip-card {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 12px; text-align: center;
+}
+.lm-flip-card.flipped { background: #7c3aed14; border-color: #7c3aed44; }
+.lm-flip-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.lm-flip-word { font-size: 13px; font-weight: 700; color: var(--text); }
+.lm-flip-word.revealed { color: var(--purple-xl); }
+
+.lm-nav {
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.lm-nav-btn {
+  font-size: 11.5px; font-weight: 600; padding: 7px 14px;
+  border-radius: 8px; border: none; cursor: default;
+  font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; gap: 5px;
+}
+.lm-nav-btn.sec { background: var(--border2); color: var(--muted2); }
+.lm-nav-btn.pri { background: var(--purple); color: #fff; }
+.lm-dots { display: flex; gap: 5px; align-items: center; }
+.lm-dot { height: 8px; border-radius: 4px; }
+.lm-dot.active { width: 20px; background: var(--purple); }
+.lm-dot.done   { width: 8px; background: #7c3aed66; }
+.lm-dot.todo   { width: 8px; background: var(--border2); }
+
+/* ─── CERTIFICATE SECTION ─── */
+.cert-section {
+  padding: 100px 60px;
+  position: relative; z-index: 1;
+}
+.cert-inner {
+  max-width: 1140px; margin: 0 auto;
+  display: grid; grid-template-columns: 480px 1fr; gap: 80px; align-items: center;
+}
+.cert-mockup {
+  background: linear-gradient(135deg, #0a080f, #080a14);
+  border: 1px solid var(--border2);
+  border-radius: 18px; padding: 40px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+}
+.cert-mockup::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, #7c3aed18, transparent 60%);
+  pointer-events: none;
+}
+.cert-deco-line {
+  height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--blue));
+  margin-bottom: 32px;
+}
+.cert-award {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #3b82f6);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 30px #7c3aed50;
+}
+.cert-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); text-align: center; margin-bottom: 10px; }
+.cert-name { font-family: 'Instrument Serif', serif; font-size: 32px; font-weight: 400; color: var(--text); text-align: center; margin-bottom: 6px; letter-spacing: -0.3px; }
+.cert-course { font-size: 14px; color: var(--muted2); text-align: center; margin-bottom: 24px; }
+.cert-details { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; }
+.cert-detail { text-align: center; }
+.cert-detail-val { font-size: 18px; font-weight: 700; color: var(--purple-xl); }
+.cert-detail-key { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.cert-deco-line-bot {
+  height: 1px; background: var(--border2); margin-bottom: 16px;
+}
+.cert-date { font-size: 11px; color: var(--muted); text-align: center; }
+
+.cert-conditions {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; margin-top: 32px;
+}
+.cert-cond-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 16px;
+}
+.cert-cond-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--muted2); line-height: 1.5;
+}
+.cert-cond-item:last-child { border-bottom: none; padding-bottom: 0; }
+.cert-cond-icon { color: var(--purple-l); margin-top: 1px; flex-shrink: 0; }
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ─── SCROLL REVEAL ─── */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.reveal.visible {
+  opacity: 1; transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<canvas id="grid-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </div>
+    <span class="nav-logo-name">LearnForge</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#types">Types de slides</a>
+    <a class="nav-link" href="#fonctionnalites">Fonctionnalités</a>
+    <a class="nav-link" href="#comment">Comment ça marche</a>
+  </div>
+  <div class="nav-cta">
+    <button class="btn-nav btn-nav-ghost">Se connecter</button>
+    <button class="btn-nav btn-nav-solid">Commencer — c'est gratuit</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    Outil de création de formations
+  </div>
+
+  <h1 class="hero-h1">
+    Créez des formations<br>
+    <em>qui retiennent l'attention</em>
+  </h1>
+
+  <p class="hero-sub">
+    LearnForge vous donne tous les outils pour construire des expériences d'apprentissage interactives — quizz, cartes mémoire, code, vidéos — sans écrire une ligne de code.
+  </p>
+
+  <div class="hero-actions">
+    <button class="btn-primary">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Créer ma première formation
+    </button>
+    <button class="btn-secondary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Voir la démo
+    </button>
+  </div>
+
+  <div class="hero-mockup">
+    <div class="mockup-glow"></div>
+    <div class="mockup-frame">
+      <div class="mockup-topbar">
+        <div class="mockup-dot" style="background:#ff5f57;"></div>
+        <div class="mockup-dot" style="background:#febc2e;"></div>
+        <div class="mockup-dot" style="background:#28c840;"></div>
+        <div style="flex:1; text-align:center; font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace;">Introduction à React — Module 2</div>
+      </div>
+      <div class="mockup-body">
+        <!-- Sidebar -->
+        <div class="mockup-sidebar">
+          <div class="mockup-module">Module 2 · Les Hooks</div>
+          <div class="mockup-slide-item"><div class="slide-type-pill">texte</div>Intro aux hooks</div>
+          <div class="mockup-slide-item"><div class="slide-type-pill code">code</div>useState en pratique</div>
+          <div class="mockup-slide-item active"><div class="slide-type-pill quiz">quiz</div>Vérification</div>
+          <div class="mockup-slide-item"><div class="slide-type-pill flip">carte</div>useEffect vs...</div>
+          <div class="mockup-slide-item"><div class="slide-type-pill">texte</div>Règles des hooks</div>
+        </div>
+        <!-- Editor -->
+        <div class="mockup-editor">
+          <div class="mockup-field">
+            <div class="mockup-label">Titre</div>
+            <div class="mockup-input">Vérification · useState</div>
+          </div>
+          <div class="mockup-field">
+            <div class="mockup-label">Question</div>
+            <div class="mockup-input tall">Que retourne le hook useState ?</div>
+          </div>
+          <div class="mockup-field">
+            <div class="mockup-label">Options</div>
+            <div class="mockup-options">
+              <div class="mockup-option"><div class="mockup-radio"></div>Une valeur simple</div>
+              <div class="mockup-option correct"><div class="mockup-radio checked"></div>Un tableau [state, setter]</div>
+              <div class="mockup-option"><div class="mockup-radio"></div>Un objet {value, set}</div>
+              <div class="mockup-option"><div class="mockup-radio"></div>Une promesse</div>
+            </div>
+          </div>
+        </div>
+        <!-- Live preview -->
+        <div class="mockup-preview">
+          <div style="font-size:10px; font-weight:600; letter-spacing:0.8px; text-transform:uppercase; color:var(--muted); margin-bottom:14px;">Aperçu en direct</div>
+          <div class="preview-card">
+            <div class="preview-card-title">Vérification · useState</div>
+            <div class="preview-question">Que retourne le hook useState ?</div>
+            <div class="preview-choices">
+              <div class="preview-choice">Une valeur simple</div>
+              <div class="preview-choice selected">Un tableau [state, setter]</div>
+              <div class="preview-choice">Un objet {value, set}</div>
+              <div class="preview-choice">Une promesse</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="stat-item">
+    <div class="stat-num">10</div>
+    <div class="stat-desc">types de slides disponibles</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0</div>
+    <div class="stat-desc">ligne de code nécessaire</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">∞</div>
+    <div class="stat-desc">formations à créer</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-desc">dans votre navigateur</div>
+  </div>
+</div>
+
+<!-- SLIDE TYPES -->
+<div class="slides-section" id="types">
+  <div class="slides-intro reveal">
+    <div class="section-eyebrow">10 types de contenu</div>
+    <h2 class="section-h2">Chaque slide est <em>un outil pédagogique</em></h2>
+    <p class="section-p">Du texte enrichi à la carte à retourner en 3D, chaque type de slide est pensé pour engager différemment l'apprenant.</p>
+  </div>
+
+  <div class="slides-grid">
+    <div class="slide-card c-purple reveal">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="slide-name">Texte</div>
+      <div class="slide-desc">Titre + contenu riche pour transmettre l'essentiel</div>
+    </div>
+    <div class="slide-card c-blue reveal" style="transition-delay:0.05s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div class="slide-name">Image</div>
+      <div class="slide-desc">Adaptative portrait / paysage avec légende</div>
+    </div>
+    <div class="slide-card c-amber reveal" style="transition-delay:0.1s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+      </div>
+      <div class="slide-name">Quiz</div>
+      <div class="slide-desc">Réponse unique ou multiple, image, message d'erreur</div>
+    </div>
+    <div class="slide-card c-green reveal" style="transition-delay:0.15s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 10h20"/></svg>
+      </div>
+      <div class="slide-name">Carte à retourner</div>
+      <div class="slide-desc">Animation 3D recto/verso, image et texte sur chaque face</div>
+    </div>
+    <div class="slide-card c-rose reveal" style="transition-delay:0.2s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </div>
+      <div class="slide-name">Vidéo</div>
+      <div class="slide-desc">URL externe ou import local en base64</div>
+    </div>
+    <div class="slide-card c-cyan reveal" style="transition-delay:0.0s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <div class="slide-name">Code</div>
+      <div class="slide-desc">Bloc avec coloration syntaxique et police mono</div>
+    </div>
+    <div class="slide-card c-violet reveal" style="transition-delay:0.05s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <div class="slide-name">Séparateur</div>
+      <div class="slide-desc">Marque une transition visuelle dans la formation</div>
+    </div>
+    <div class="slide-card c-orange reveal" style="transition-delay:0.1s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M10 14H3"/><path d="M14 10H3"/><path d="M6 18H3"/></svg>
+      </div>
+      <div class="slide-name">Texte à trous</div>
+      <div class="slide-desc">Saisie libre ou banque de mots avec drag & drop</div>
+    </div>
+    <div class="slide-card c-teal reveal" style="transition-delay:0.15s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="slide-name">Vrai / Faux</div>
+      <div class="slide-desc">Énoncé + explication affichée après la réponse</div>
+    </div>
+    <div class="slide-card c-pink reveal" style="transition-delay:0.2s">
+      <div class="slide-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="slide-name">Révélation</div>
+      <div class="slide-desc">Image qui coulisse et révèle un contenu caché dessous</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="fonctionnalites">
+  <div class="reveal">
+    <div class="section-eyebrow">Conçu pour les créateurs</div>
+    <h2 class="section-h2">Tout ce qu'il faut pour<br><em>aller vite</em></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feature-item reveal" style="transition-delay:0s">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div class="feature-title">Aperçu en temps réel</div>
+      <div class="feature-desc">Chaque modification s'affiche instantanément dans le panneau de prévisualisation — ce que vous voyez est exactement ce que l'apprenant verra.</div>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.1s">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="feature-title">Import de médias local</div>
+      <div class="feature-desc">Importez images et vidéos depuis votre ordinateur — elles sont converties en base64 et embarquées directement dans la formation.</div>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.05s">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>
+      </div>
+      <div class="feature-title">Export JSON en un clic</div>
+      <div class="feature-desc">Copiez votre formation complète au format JSON pour la sauvegarder, la partager ou l'intégrer dans n'importe quel système.</div>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.15s">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="feature-title">Certificat automatique</div>
+      <div class="feature-desc">À la fin de chaque formation complétée, un certificat personnalisé est généré automatiquement avec la date et le nom de l'apprenant.</div>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.1s">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="feature-title">Suivi de progression</div>
+      <div class="feature-desc">La progression de l'apprenant est suivie slide par slide — scroll, quiz, cartes vues — avec affichage d'une barre de progression en temps réel.</div>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.2s">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="feature-title">100% dans le navigateur</div>
+      <div class="feature-desc">Pas de serveur, pas d'installation. Tout fonctionne en mémoire dans votre navigateur — rapide, privé, toujours disponible.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<div class="dash-section">
+  <div class="dash-inner">
+    <div class="reveal">
+      <div class="section-eyebrow">Tableau de bord créateur</div>
+      <h2 class="section-h2">Vos formations,<br><em>toutes sous contrôle</em></h2>
+      <p class="section-p" style="margin-bottom:0;">Depuis votre tableau de bord, gérez vos formations, suivez l'engagement de vos apprenants et repérez d'un coup d'œil ce qui fonctionne.</p>
+    </div>
+
+    <div class="dash-layout reveal" style="transition-delay:0.15s">
+      <!-- Sidebar -->
+      <div class="dash-aside">
+        <div class="dash-logo-row">
+          <div class="dash-logo-ico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <span class="dash-logo-txt">LearnForge</span>
+        </div>
+        <div class="dash-nav-item active">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Tableau de bord
+        </div>
+        <div class="dash-nav-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Mes formations
+        </div>
+        <div class="dash-nav-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Apprenants
+        </div>
+        <div class="dash-nav-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Statistiques
+        </div>
+        <div class="dash-nav-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Paramètres
+        </div>
+        <div class="dash-footer-user">
+          <div class="dash-avatar">JD</div>
+          <div>
+            <div class="dash-user-name">Jean Dupont</div>
+            <div class="dash-user-role">Créateur</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="dash-main">
+        <div class="dash-topbar">
+          <div class="dash-breadcrumb">LearnForge / <span>Tableau de bord</span></div>
+          <div class="dash-search">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Rechercher...
+          </div>
+        </div>
+
+        <div class="dash-content">
+          <div class="dash-hero-row">
+            <div>
+              <div class="dash-hero-title">Bonjour, Jean 👋</div>
+              <div class="dash-hero-sub">Voici ce qui se passe sur vos formations.</div>
+            </div>
+            <div class="dash-hero-btns">
+              <button class="dash-btn-pri">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nouvelle formation
+              </button>
+              <button class="dash-btn-sec">Importer</button>
+            </div>
+          </div>
+
+          <div class="dash-stats">
+            <div class="dash-stat">
+              <div class="dash-stat-label">Formations</div>
+              <div class="dash-stat-val">6</div>
+              <div class="dash-stat-sub">2 publiées ce mois</div>
+            </div>
+            <div class="dash-stat">
+              <div class="dash-stat-label">Apprenants</div>
+              <div class="dash-stat-val">142</div>
+              <div class="dash-stat-sub">+18 cette semaine</div>
+            </div>
+            <div class="dash-stat">
+              <div class="dash-stat-label">Taux de complétion</div>
+              <div class="dash-stat-val">74%</div>
+              <div class="dash-stat-sub">+5% vs mois dernier</div>
+            </div>
+          </div>
+
+          <div style="font-size:13px; font-weight:700; color:var(--text); margin-bottom:12px;">Mes formations</div>
+          <div class="dash-grid">
+            <div class="dash-card">
+              <div class="dash-card-thumb" style="background:linear-gradient(135deg,#1a0a2e,#0a0a1a);">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1" opacity="0.4"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+              <div class="dash-card-body">
+                <span class="dash-card-tag" style="background:#7c3aed18;color:#a78bfa;">Développement</span>
+                <div class="dash-card-title">Introduction à React</div>
+                <div class="dash-card-meta">
+                  <div class="dash-card-stats">
+                    <span>👤 48</span><span>📑 8 slides</span>
+                  </div>
+                  <span class="dash-card-status" style="color:#22c55e;">● Publiée</span>
+                </div>
+                <div class="dash-prog"><div class="dash-prog-fill" style="width:82%"></div></div>
+              </div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-thumb" style="background:linear-gradient(135deg,#0a1a2e,#050d1a);">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.4"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              </div>
+              <div class="dash-card-body">
+                <span class="dash-card-tag" style="background:#3b82f618;color:#60a5fa;">Code</span>
+                <div class="dash-card-title">Python pour débutants</div>
+                <div class="dash-card-meta">
+                  <div class="dash-card-stats">
+                    <span>👤 31</span><span>📑 12 slides</span>
+                  </div>
+                  <span class="dash-card-status" style="color:#22c55e;">● Publiée</span>
+                </div>
+                <div class="dash-prog"><div class="dash-prog-fill" style="width:61%"></div></div>
+              </div>
+            </div>
+            <div class="dash-card">
+              <div class="dash-card-thumb" style="background:linear-gradient(135deg,#1a1a0a,#0f0f05);">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="1" opacity="0.4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <div class="dash-card-body">
+                <span class="dash-card-tag" style="background:#eab30818;color:#fbbf24;">Design</span>
+                <div class="dash-card-title">UI/UX Fondamentaux</div>
+                <div class="dash-card-meta">
+                  <div class="dash-card-stats">
+                    <span>👤 0</span><span>📑 5 slides</span>
+                  </div>
+                  <span class="dash-card-status" style="color:#64748b;">● Brouillon</span>
+                </div>
+                <div class="dash-prog"><div class="dash-prog-fill" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-activity-title">Activité récente</div>
+          <div class="dash-activity-list">
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#22c55e;"></div>
+              <div class="dash-activity-text"><strong>Marie L.</strong> a terminé Introduction à React</div>
+              <div class="dash-activity-time">Il y a 12 min</div>
+            </div>
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#7c3aed;"></div>
+              <div class="dash-activity-text"><strong>Thomas B.</strong> a commencé Python pour débutants</div>
+              <div class="dash-activity-time">Il y a 1h</div>
+            </div>
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#22c55e;"></div>
+              <div class="dash-activity-text"><strong>Léa M.</strong> a obtenu son certificat React</div>
+              <div class="dash-activity-time">Hier</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LEARNER EXPERIENCE -->
+<div class="learner-section">
+  <div class="learner-inner">
+    <div class="learner-text reveal">
+      <div class="section-eyebrow">Vue apprenant</div>
+      <h2 class="section-h2">Une expérience<br><em>fluide et engageante</em></h2>
+      <p class="section-p" style="margin-bottom:32px;">Vos apprenants naviguent module par module. Chaque slide est interactive — ils répondent aux quiz, retournent les cartes, complètent les textes à trous. La progression est suivie en continu.</p>
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#7c3aed14; border:1px solid #7c3aed30; display:flex; align-items:center; justify-content:center; color:var(--purple-l); flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px;">Progression temps réel</div>
+            <div style="font-size:13px; color:var(--muted); line-height:1.5;">Barre de progression calculée sur le scroll, les quiz validés et les cartes retournées.</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#7c3aed14; border:1px solid #7c3aed30; display:flex; align-items:center; justify-content:center; color:var(--purple-l); flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px;">Navigation par modules</div>
+            <div style="font-size:13px; color:var(--muted); line-height:1.5;">L'apprenant avance module par module avec un indicateur de position visuel.</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:14px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#7c3aed14; border:1px solid #7c3aed30; display:flex; align-items:center; justify-content:center; color:var(--purple-l); flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div>
+            <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px;">Certificat à la fin</div>
+            <div style="font-size:13px; color:var(--muted); line-height:1.5;">Généré automatiquement quand toutes les conditions sont remplies.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learner-mockup reveal" style="transition-delay:0.15s">
+      <div class="lm-header">
+        <div class="lm-course-title">Introduction à React</div>
+        <div class="lm-mode-badge">Aperçu</div>
+      </div>
+      <div class="lm-progress-bar"><div class="lm-progress-fill" style="width:68%"></div></div>
+      <div class="lm-body">
+
+        <!-- Slide texte -->
+        <div class="lm-slide">
+          <div class="lm-slide-type">Texte</div>
+          <div class="lm-slide-title">Qu'est-ce qu'un composant ?</div>
+          <div class="lm-slide-content">Un composant React est une fonction qui retourne du JSX. Il encapsule logique et affichage en un bloc réutilisable.</div>
+        </div>
+
+        <!-- Slide quiz active -->
+        <div class="lm-slide active">
+          <div class="lm-slide-type">Quiz · Module 2</div>
+          <div class="lm-slide-title">Que retourne useState ?</div>
+          <div class="lm-quiz-opts">
+            <div class="lm-quiz-opt wrong">Une valeur simple</div>
+            <div class="lm-quiz-opt correct">Un tableau [state, setter] ✓</div>
+            <div class="lm-quiz-opt">Un objet {value, set}</div>
+          </div>
+        </div>
+
+        <!-- Slide carte flip -->
+        <div class="lm-slide">
+          <div class="lm-slide-type">Cartes à retourner</div>
+          <div class="lm-slide-title">Hooks fondamentaux</div>
+          <div class="lm-flip">
+            <div class="lm-flip-card flipped">
+              <div class="lm-flip-label">Retourné</div>
+              <div class="lm-flip-word revealed">useState</div>
+            </div>
+            <div class="lm-flip-card flipped">
+              <div class="lm-flip-label">Retourné</div>
+              <div class="lm-flip-word revealed">useEffect</div>
+            </div>
+            <div class="lm-flip-card">
+              <div class="lm-flip-label">Cliquez</div>
+              <div class="lm-flip-word">?</div>
+            </div>
+            <div class="lm-flip-card">
+              <div class="lm-flip-label">Cliquez</div>
+              <div class="lm-flip-word">?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lm-nav">
+        <div class="lm-nav-btn sec">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Précédent
+        </div>
+        <div class="lm-dots">
+          <div class="lm-dot done"></div>
+          <div class="lm-dot active"></div>
+          <div class="lm-dot todo"></div>
+        </div>
+        <div class="lm-nav-btn pri">
+          Suivant
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CERTIFICATE -->
+<div class="cert-section">
+  <div class="cert-inner">
+    <div class="cert-mockup reveal">
+      <div class="cert-deco-line"></div>
+      <div class="cert-award">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      </div>
+      <div class="cert-label">Certificat de réussite</div>
+      <div class="cert-name">Marie Laurent</div>
+      <div class="cert-course">a complété avec succès la formation<br><strong style="color:var(--purple-xl);">Introduction à React</strong></div>
+      <div class="cert-details">
+        <div class="cert-detail">
+          <div class="cert-detail-val">100%</div>
+          <div class="cert-detail-key">Progression</div>
+        </div>
+        <div class="cert-detail">
+          <div class="cert-detail-val">4/4</div>
+          <div class="cert-detail-key">Quiz réussis</div>
+        </div>
+        <div class="cert-detail">
+          <div class="cert-detail-val">8</div>
+          <div class="cert-detail-key">Cartes vues</div>
+        </div>
+      </div>
+      <div class="cert-deco-line-bot"></div>
+      <div class="cert-date">Délivré le 25 mars 2026 · LearnForge</div>
+
+      <div class="cert-conditions">
+        <div class="cert-cond-title">Conditions d'obtention</div>
+        <div class="cert-cond-item">
+          <div class="cert-cond-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/></svg>
+          </div>
+          Scroller 100% du contenu de chaque module
+        </div>
+        <div class="cert-cond-item">
+          <div class="cert-cond-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          </div>
+          Retourner toutes les cartes interactives
+        </div>
+        <div class="cert-cond-item">
+          <div class="cert-cond-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          Répondre correctement à tous les quiz
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.15s">
+      <div class="section-eyebrow">Certificat automatique</div>
+      <h2 class="section-h2">La fierté de<br><em>terminer ce qu'on commence</em></h2>
+      <p class="section-p" style="margin-bottom:32px;">Quand un apprenant remplit toutes les conditions — scroll complet, cartes retournées, quiz validés — LearnForge génère automatiquement un certificat personnalisé avec son nom et la date.</p>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--muted2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple-l)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Généré en temps réel, sans serveur
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--muted2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple-l)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Nom personnalisé de l'apprenant
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--muted2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple-l)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Conditions strictes : scroll + cartes + quiz
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; font-size:14px; color:var(--muted2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple-l)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Accessible depuis le mode aperçu du créateur
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="flow-section" id="comment">
+  <div class="flow-inner">
+    <div class="reveal" style="text-align:center; max-width:560px; margin:0 auto;">
+      <div class="section-eyebrow" style="justify-content:center;">3 étapes</div>
+      <h2 class="section-h2">De l'idée à la <em>formation publiée</em></h2>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step reveal" style="transition-delay:0s">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-title">Structurez vos modules</div>
+        <div class="flow-step-desc">Créez votre formation en modules, ajoutez autant de slides que nécessaire et réordonnez-les par glisser-déposer.</div>
+      </div>
+      <div class="flow-step reveal" style="transition-delay:0.15s">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-title">Choisissez vos types</div>
+        <div class="flow-step-desc">Pour chaque slide, choisissez parmi 10 types interactifs — quiz, code, carte, vidéo — et remplissez les champs à droite.</div>
+      </div>
+      <div class="flow-step reveal" style="transition-delay:0.3s">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-title">Prévisualisez et partagez</div>
+        <div class="flow-step-desc">Passez en mode aperçu pour vivre l'expérience apprenant, puis exportez en JSON ou partagez le lien.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA BOTTOM -->
+<div class="cta-section">
+  <h2 class="cta-h2 reveal">Prêt à créer votre<br><em>première formation ?</em></h2>
+  <p class="cta-sub reveal">Lancez-vous en quelques secondes, sans compte requis. Vos données restent dans votre navigateur.</p>
+  <div class="cta-btns reveal">
+    <button class="btn-primary" style="font-size:16px; padding:15px 32px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Ouvrir LearnForge
+    </button>
+    <button class="btn-secondary">
+      Voir les formations exemple
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-logo-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </div>
+    <span class="footer-name">LearnForge</span>
+  </div>
+  <div class="footer-right">Aucun tracking. Aucune donnée collectée.</div>
+</footer>
+
+<script>
+// ─── SCROLL REVEAL ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ─── HEX GRID CANVAS ───
+const canvas = document.getElementById('grid-canvas');
+const ctx    = canvas.getContext('2d');
+
+const R_HEX      = 46;    // rayon d'un hexagone (centre → sommet)
+const BASE_ALPHA  = 0.07;
+const HOVER_ALPHA = 0.40;
+const FADE_RADIUS = 160;  // rayon d'influence perpendiculaire
+const ALONG_RADIUS = 220; // rayon d'influence le long de la ligne
+const DECAY       = 0.055;
+
+const SQ3 = Math.sqrt(3);
+
+let segments = []; // { ax, ay, bx, by, heat }
+let mouse = { x: -9999, y: -9999 };
+
+function hexVertices(cx, cy) {
+  const v = [];
+  for (let k = 0; k < 6; k++) {
+    const a = (Math.PI / 3) * k - Math.PI / 6; // pointy-top, sommet du haut à -30°... flat-top
+    v.push({ x: cx + R_HEX * Math.cos(a), y: cy + R_HEX * Math.sin(a) });
+  }
+  return v;
+}
+
+function buildSegments() {
+  segments = [];
+  const seen = new Set();
+
+  const colW    = SQ3 * R_HEX;       // distance horizontale entre centres
+  const rowH    = 1.5 * R_HEX;       // distance verticale entre centres
+  const numCols = Math.ceil(canvas.width  / colW) + 3;
+  const numRows = Math.ceil(canvas.height / rowH) + 3;
+
+  for (let row = -1; row < numRows; row++) {
+    for (let col = -1; col < numCols; col++) {
+      const cx = col * colW + (row % 2 !== 0 ? colW / 2 : 0);
+      const cy = row * rowH;
+      const verts = hexVertices(cx, cy);
+
+      for (let i = 0; i < 6; i++) {
+        const a = verts[i];
+        const b = verts[(i + 1) % 6];
+        const ax = Math.round(a.x), ay = Math.round(a.y);
+        const bx = Math.round(b.x), by = Math.round(b.y);
+        const key = (ax < bx || (ax === bx && ay <= by))
+          ? `${ax},${ay}|${bx},${by}`
+          : `${bx},${by}|${ax},${ay}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          segments.push({ ax: a.x, ay: a.y, bx: b.x, by: b.y, heat: 0 });
+        }
+      }
+    }
+  }
+}
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  buildSegments();
+}
+
+window.addEventListener('resize', resize);
+resize();
+
+window.addEventListener('mousemove', e => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (const seg of segments) {
+    const dx  = seg.bx - seg.ax;
+    const dy  = seg.by - seg.ay;
+    const len = Math.sqrt(dx * dx + dy * dy);
+    if (len === 0) continue;
+
+    // distance perpendiculaire : à quelle distance la souris est-elle de la droite infinie ?
+    const perp = Math.abs((mouse.x - seg.ax) * dy - (mouse.y - seg.ay) * dx) / len;
+    const lineStrength = Math.max(0, 1 - perp / FADE_RADIUS);
+
+    // projection de la souris sur la droite infinie
+    const t     = ((mouse.x - seg.ax) * dx + (mouse.y - seg.ay) * dy) / (len * len);
+    const projX = seg.ax + t * dx;
+    const projY = seg.ay + t * dy;
+
+    // distance du point de projection au milieu du segment → dégradé le long
+    const midX      = (seg.ax + seg.bx) / 2;
+    const midY      = (seg.ay + seg.by) / 2;
+    const alongDist = Math.sqrt((projX - midX) ** 2 + (projY - midY) ** 2);
+    const alongFade = Math.max(0, 1 - alongDist / ALONG_RADIUS);
+
+    const target = lineStrength * alongFade;
+    seg.heat += (target - seg.heat) * (target > seg.heat ? 0.22 : DECAY);
+
+    const alpha = BASE_ALPHA + seg.heat * (HOVER_ALPHA - BASE_ALPHA);
+    ctx.beginPath();
+    ctx.moveTo(seg.ax, seg.ay);
+    ctx.lineTo(seg.bx, seg.by);
+    ctx.strokeStyle = `rgba(124,58,237,${alpha})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
